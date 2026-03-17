@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>RV - Google Play Review Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+/* ── THEMES (5 dark, 3 white) ── */
+:root {
+  --bg:#07090f;--surface:#0f1118;--surface2:#161b26;--surface3:#1d2433;
+  --border:#232b3e;--border2:#2e3a52;
+  --accent:#6366f1;--accent2:#a78bfa;--accent3:#38bdf8;
+  --green:#22c55e;--warn:#f59e0b;--danger:#f87171;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#475569;
+  --r:10px;--r-lg:16px;--r-xl:22px;
+  --mono:'DM Mono',monospace;--sans:'Plus Jakarta Sans',sans-serif;--star:#fbbf24;
+}
+/* Dark themes */
+body.theme-dark    {--bg:#07090f;--surface:#0f1118;--surface2:#161b26;--surface3:#1d2433;--border:#232b3e;--border2:#2e3a52;--accent:#6366f1;--accent2:#a78bfa;--accent3:#38bdf8;--text:#f1f5f9;--text2:#94a3b8;--text3:#475569;--sel-bg:rgba(99,102,241,.12);--sel-border:rgba(99,102,241,.4);--chip-bg:rgba(99,102,241,.18);--tag-bg:rgba(99,102,241,.12);--tag-border:rgba(99,102,241,.3);--stat-act:rgba(99,102,241,.08);}
+body.theme-midnight{--bg:#08001a;--surface:#100028;--surface2:#18003e;--surface3:#220055;--border:#30006a;--border2:#4800a8;--accent:#8b5cf6;--accent2:#c084fc;--accent3:#e879f9;--text:#faf5ff;--text2:#c4b5fd;--text3:#7c3aed;--sel-bg:rgba(139,92,246,.15);--sel-border:rgba(139,92,246,.5);--chip-bg:rgba(139,92,246,.2);--tag-bg:rgba(139,92,246,.15);--tag-border:rgba(139,92,246,.35);--stat-act:rgba(139,92,246,.1);}
+body.theme-ocean   {--bg:#020b18;--surface:#041525;--surface2:#062035;--surface3:#082d4a;--border:#0d3a5e;--border2:#1a5080;--accent:#0ea5e9;--accent2:#38bdf8;--accent3:#7dd3fc;--text:#e0f2fe;--text2:#7dd3fc;--text3:#0369a1;--sel-bg:rgba(14,165,233,.15);--sel-border:rgba(14,165,233,.5);--chip-bg:rgba(14,165,233,.2);--tag-bg:rgba(14,165,233,.15);--tag-border:rgba(14,165,233,.35);--stat-act:rgba(14,165,233,.1);}
+body.theme-charcoal{--bg:#111;--surface:#1a1a1a;--surface2:#222;--surface3:#2a2a2a;--border:#333;--border2:#444;--accent:#a0aec0;--accent2:#718096;--accent3:#64748b;--text:#f8fafc;--text2:#94a3b8;--text3:#475569;--sel-bg:rgba(160,174,192,.12);--sel-border:rgba(160,174,192,.4);--chip-bg:rgba(160,174,192,.15);--tag-bg:rgba(160,174,192,.1);--tag-border:rgba(160,174,192,.3);--stat-act:rgba(160,174,192,.08);}
+body.theme-forest  {--bg:#050e05;--surface:#0a1a0a;--surface2:#0f260f;--surface3:#153315;--border:#1d4a1d;--border2:#276227;--accent:#4ade80;--accent2:#22c55e;--accent3:#86efac;--text:#f0fdf4;--text2:#86efac;--text3:#166534;--sel-bg:rgba(74,222,128,.12);--sel-border:rgba(74,222,128,.45);--chip-bg:rgba(74,222,128,.18);--tag-bg:rgba(74,222,128,.12);--tag-border:rgba(74,222,128,.3);--stat-act:rgba(74,222,128,.08);}
+/* Light themes */
+body.theme-light   {--bg:#f8fafc;--surface:#fff;--surface2:#f1f5f9;--surface3:#e8eef7;--border:#e2e8f0;--border2:#cbd5e1;--accent:#6366f1;--accent2:#4f46e5;--accent3:#0891b2;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--sel-bg:rgba(99,102,241,.08);--sel-border:rgba(99,102,241,.35);--chip-bg:rgba(99,102,241,.12);--tag-bg:rgba(99,102,241,.08);--tag-border:rgba(99,102,241,.25);--stat-act:rgba(99,102,241,.06);}
+body.theme-paper   {--bg:#faf7f2;--surface:#fff;--surface2:#f5f0e8;--surface3:#ede6d8;--border:#e8dfc8;--border2:#d4c9b0;--accent:#b45309;--accent2:#d97706;--accent3:#0891b2;--text:#1c1917;--text2:#57534e;--text3:#a8a29e;--sel-bg:rgba(180,83,9,.08);--sel-border:rgba(180,83,9,.3);--chip-bg:rgba(180,83,9,.1);--tag-bg:rgba(180,83,9,.07);--tag-border:rgba(180,83,9,.25);--stat-act:rgba(180,83,9,.05);}
+body.theme-rose    {--bg:#fff1f2;--surface:#fff;--surface2:#ffe4e6;--surface3:#fecdd3;--border:#fda4af;--border2:#fb7185;--accent:#e11d48;--accent2:#be123c;--accent3:#0891b2;--text:#1c0a0c;--text2:#9f1239;--text3:#fca5a5;--sel-bg:rgba(225,29,72,.08);--sel-border:rgba(225,29,72,.3);--chip-bg:rgba(225,29,72,.1);--tag-bg:rgba(225,29,72,.07);--tag-border:rgba(225,29,72,.25);--stat-act:rgba(225,29,72,.05);}
+body.theme-sky     {--bg:#f0f9ff;--surface:#fff;--surface2:#e0f2fe;--surface3:#bae6fd;--border:#bae6fd;--border2:#7dd3fc;--accent:#0284c7;--accent2:#0369a1;--accent3:#0891b2;--text:#082f49;--text2:#0369a1;--text3:#7dd3fc;--sel-bg:rgba(2,132,199,.08);--sel-border:rgba(2,132,199,.3);--chip-bg:rgba(2,132,199,.1);--tag-bg:rgba(2,132,199,.07);--tag-border:rgba(2,132,199,.25);--stat-act:rgba(2,132,199,.05);}
+body.theme-lavender{--bg:#f5f3ff;--surface:#fff;--surface2:#ede9fe;--surface3:#ddd6fe;--border:#ddd6fe;--border2:#c4b5fd;--accent:#7c3aed;--accent2:#6d28d9;--accent3:#8b5cf6;--text:#1e0a4a;--text2:#5b21b6;--text3:#c4b5fd;--sel-bg:rgba(124,58,237,.08);--sel-border:rgba(124,58,237,.3);--chip-bg:rgba(124,58,237,.1);--tag-bg:rgba(124,58,237,.07);--tag-border:rgba(124,58,237,.25);--stat-act:rgba(124,58,237,.05);}
+body.theme-sand    {--bg:#fefce8;--surface:#fff;--surface2:#fef9c3;--surface3:#fef08a;--border:#fde68a;--border2:#fbbf24;--accent:#92400e;--accent2:#b45309;--accent3:#0891b2;--text:#1c1709;--text2:#713f12;--text3:#d97706;--sel-bg:rgba(146,64,14,.08);--sel-border:rgba(146,64,14,.3);--chip-bg:rgba(146,64,14,.1);--tag-bg:rgba(146,64,14,.07);--tag-border:rgba(146,64,14,.25);--stat-act:rgba(146,64,14,.05);}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:14px;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;transition:background .15s,color .15s;}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;gap:12px;padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:300;}
+.logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:#fff;flex-shrink:0;}
+.hdr-titles{display:flex;flex-direction:column;}
+.hdr-title{font-weight:800;font-size:.9rem;letter-spacing:-.02em;line-height:1.1;}
+.hdr-sub{font-size:.65rem;color:var(--text2);}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+/* Auth in header */
+.hdr-auth{display:flex;align-items:center;gap:7px;}
+.pin-hdr{width:52px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:.9rem;text-align:center;letter-spacing:.2em;padding:4px 6px;outline:none;transition:.12s;}
+.pin-hdr:focus{border-color:var(--accent);}
+.auth-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:.68rem;font-weight:600;border:1px solid var(--border);}
+.auth-pill.on{border-color:var(--green);color:var(--green);background:rgba(34,197,94,.08);}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+.hdr-sep{width:1px;height:20px;background:var(--border);}
+
+/* Theme dropdown */
+.theme-wrap{position:relative;}
+.theme-trigger{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:.74rem;color:var(--text2);user-select:none;width:100%;transition:.12s;}
+.theme-trigger:hover{border-color:var(--border2);color:var(--text);}
+.theme-drop{position:absolute;left:0;bottom:calc(100% + 6px);background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-lg);padding:8px;min-width:220px;z-index:500;box-shadow:0 -8px 32px rgba(0,0,0,.35);display:none;}
+.theme-drop.open{display:block;}
+.theme-grp{font-size:.58rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);padding:5px 8px 3px;font-weight:700;}
+.theme-opt{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;cursor:pointer;font-size:.74rem;transition:.1s;}
+.theme-opt:hover{background:var(--surface2);}
+.theme-opt.cur{background:var(--sel-bg);color:var(--accent);}
+.theme-sw{width:18px;height:18px;border-radius:4px;flex-shrink:0;border:1.5px solid rgba(128,128,128,.3);}
+
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:272px 1fr;min-height:calc(100vh - 53px);}
+@media(max-width:820px){.shell{grid-template-columns:1fr;}}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;height:calc(100vh - 53px);position:sticky;top:53px;}
+.sec-lbl{font-size:.58rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);font-weight:700;margin-bottom:5px;}
+.card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;}
+
+/* App list */
+.cat-hdr{display:flex;align-items:center;gap:6px;cursor:pointer;padding:5px 8px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);user-select:none;margin-bottom:2px;}
+.cat-hdr:hover{border-color:var(--border2);}
+.cat-name{font-size:.75rem;font-weight:600;flex:1;}
+.cat-badge{font-size:.6rem;background:var(--bg);border-radius:8px;padding:1px 6px;color:var(--text2);}
+.app-list{display:flex;flex-direction:column;gap:2px;padding-left:4px;margin-bottom:4px;}
+.app-item{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:.72rem;border:1px solid transparent;transition:.1s;position:relative;}
+.app-item:hover{background:var(--surface3);border-color:var(--border);}
+.app-item.sel{background:var(--sel-bg);border-color:var(--accent);color:var(--accent2);}
+.app-ico{width:20px;height:20px;border-radius:4px;background:var(--surface3);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;}
+.app-ico img{width:100%;height:100%;object-fit:cover;}
+.sel-tick{font-size:.7rem;color:var(--green);flex-shrink:0;}
+
+/* Selected apps summary */
+.sel-row{display:flex;align-items:center;gap:7px;padding:6px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;}
+.sel-row-ico{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--accent),var(--accent2));overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.8rem;border:1px solid var(--border);}
+.sel-row-ico img{width:100%;height:100%;object-fit:cover;}
+.sel-row-name{font-size:.71rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.sel-row-pkg{font-size:.58rem;color:var(--text2);font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* Controls */
+label{display:block;font-size:.7rem;color:var(--text2);margin-bottom:3px;font-weight:500;}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--sans);font-size:.76rem;padding:6px 9px;outline:none;transition:.12s;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+select option{background:var(--surface2);}
+.field{margin-bottom:9px;}.field:last-child{margin-bottom:0;}
+input[type=date]{color-scheme:dark;}
+body.theme-light input[type=date],body.theme-paper input[type=date],body.theme-rose input[type=date],body.theme-sky input[type=date],body.theme-lavender input[type=date],body.theme-sand input[type=date]{color-scheme:light;}
+
+/* AI provider toggle */
+.ai-tabs{display:flex;gap:0;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:9px;}
+.ai-tab{flex:1;padding:5px;text-align:center;cursor:pointer;font-size:.7rem;font-weight:600;color:var(--text2);transition:.12s;border:none;background:none;}
+.ai-tab:hover{background:var(--surface2);}
+.ai-tab.on{background:var(--accent);color:#fff;}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:6px 14px;border-radius:var(--r);border:none;cursor:pointer;font-family:var(--sans);font-size:.75rem;font-weight:600;transition:.12s;}
+.btn:active{transform:scale(.97);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover:not(:disabled){filter:brightness(1.1);}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border2);}
+.btn-secondary:hover:not(:disabled){background:var(--surface3);}
+.btn-success{background:var(--green);color:#fff;}
+.btn-sm{padding:4px 10px;font-size:.7rem;}
+.btn-xs{padding:3px 8px;font-size:.65rem;}
+.btn-full{width:100%;}
+.sp{width:11px;height:11px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── MAIN ── */
+.main{display:flex;flex-direction:column;}
+.toolbar{display:flex;align-items:center;gap:7px;padding:10px 18px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.toolbar-title{font-weight:700;font-size:.88rem;}
+.tsep{width:1px;height:18px;background:var(--border);}
+
+/* Stats bar */
+.stats-bar{display:flex;align-items:stretch;background:var(--surface2);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0;}
+.stat-item{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 16px;border-right:1px solid var(--border);cursor:pointer;transition:.1s;white-space:nowrap;}
+.stat-item:last-child{border-right:none;}
+.stat-item:hover{background:var(--surface3);}
+.stat-item.act{background:var(--stat-act);border-bottom:2px solid var(--accent);}
+.stat-right{cursor:default;}
+.stat-right:hover{background:transparent;}
+.stat-num{font-size:1.25rem;font-weight:800;line-height:1;}
+.stat-lbl{font-size:.6rem;color:var(--text2);margin-top:1px;}
+.c5{color:#22c55e;}.c4{color:#86efac;}.c3{color:var(--warn);}.c2{color:#fb923c;}.c1{color:var(--danger);}
+
+/* Search + chips */
+.search-box{display:flex;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;min-width:150px;flex:1;}
+.search-box input{border:none;background:transparent;padding:4px 9px;font-size:.76rem;}
+.search-ico{padding:0 8px;color:var(--text3);}
+.chips{display:flex;gap:4px;flex-wrap:wrap;}
+.chip{font-size:.64rem;padding:3px 8px;border-radius:10px;border:1px solid var(--border);cursor:pointer;background:var(--surface2);transition:.1s;white-space:nowrap;}
+.chip:hover{border-color:var(--border2);}
+.chip.on{background:var(--chip-bg);border-color:var(--accent);color:var(--accent2);}
+
+/* Progress */
+.prog-wrap{background:var(--border);border-radius:4px;height:3px;overflow:hidden;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s;border-radius:4px;}
+
+/* Alerts */
+.alert{padding:8px 12px;border-radius:var(--r);font-size:.74rem;}
+.al-info{background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);color:var(--accent3);}
+.al-ok{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);color:var(--green);}
+.al-err{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2);color:var(--danger);}
+.al-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--warn);}
+.hidden{display:none!important;}
+.mt1{margin-top:5px;}.mt2{margin-top:10px;}
+
+/* Review list area */
+.reviews-area{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:11px;}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:10px;padding:60px 20px;text-align:center;color:var(--text2);}
+.empty-ico{font-size:2.8rem;opacity:.35;}
+
+/* Review card */
+.rv-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:14px;transition:.12s;}
+.rv-card:hover{border-color:var(--border2);}
+.rv-card.s5{border-left:3px solid #22c55e;}
+.rv-card.s4{border-left:3px solid #86efac;}
+.rv-card.s3{border-left:3px solid var(--warn);}
+.rv-card.s2{border-left:3px solid #fb923c;}
+.rv-card.s1{border-left:3px solid var(--danger);}
+.rv-top{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px;}
+.rv-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0;}
+.rv-meta{flex:1;min-width:0;}
+.rv-author{font-weight:700;font-size:.8rem;}
+.rv-date{font-size:.64rem;color:var(--text2);}
+.app-tag{font-size:.6rem;background:var(--tag-bg);border:1px solid var(--tag-border);border-radius:6px;padding:1px 7px;color:var(--accent2);font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rv-stars{font-size:.82rem;letter-spacing:.05em;}
+.rv-device{font-size:.64rem;color:var(--text3);font-family:var(--mono);}
+.rv-lang{font-size:.64rem;color:var(--text2);}
+.rv-ver{font-size:.62rem;color:var(--text3);}
+.sent-badge{font-size:.6rem;padding:2px 7px;border-radius:10px;font-weight:600;flex-shrink:0;}
+.s-pos{background:rgba(34,197,94,.12);color:#22c55e;border:1px solid rgba(34,197,94,.25);}
+.s-neu{background:rgba(245,158,11,.1);color:var(--warn);border:1px solid rgba(245,158,11,.2);}
+.s-neg{background:rgba(248,113,113,.1);color:var(--danger);border:1px solid rgba(248,113,113,.2);}
+
+.rv-body{font-size:.78rem;color:var(--text2);line-height:1.6;margin-bottom:7px;}
+.rv-body.clamped{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.read-more-btn{font-size:.66rem;color:var(--accent3);cursor:pointer;border:none;background:none;padding:0;margin-top:1px;}
+.rv-translated{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.15);border-radius:8px;padding:7px 10px;font-size:.76rem;color:var(--text2);margin-bottom:7px;}
+.rv-tl-lbl{font-size:.6rem;color:var(--accent3);font-weight:600;margin-bottom:2px;}
+.rv-ai-box{background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.2);border-radius:8px;padding:8px 10px;font-size:.76rem;color:var(--text2);margin-bottom:7px;}
+.rv-ai-lbl{font-size:.6rem;color:var(--accent2);font-weight:600;margin-bottom:2px;}
+.rv-reply-box{background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);border-radius:9px;padding:9px 11px;margin-top:7px;}
+.rv-reply-lbl{font-size:.6rem;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.rv-reply-txt{font-size:.76rem;color:var(--text2);}
+.reply-ta{resize:none;min-height:56px;margin-top:5px;font-size:.76rem;}
+.rv-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;align-items:center;}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;gap:7px;padding:10px 18px;border-top:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+.pg-info{font-size:.72rem;color:var(--text2);flex:1;}
+
+/* App icon cache in review cards */
+.rv-app-ico{width:18px;height:18px;border-radius:4px;background:var(--surface3);overflow:hidden;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;font-size:.55rem;vertical-align:middle;margin-right:3px;}
+.rv-app-ico img{width:100%;height:100%;object-fit:cover;border-radius:3px;}
+
+/* ── CUSTOM THEME EDITOR ── */
+.cte-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.cte-modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-xl);width:min(680px,96vw);max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.5);}
+.cte-header{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);}
+.cte-title{font-weight:800;font-size:1rem;flex:1;}
+.cte-body{display:grid;grid-template-columns:1fr 1fr;gap:0;overflow-y:auto;flex:1;}
+.cte-left{padding:18px;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:10px;overflow-y:auto;}
+.cte-right{padding:18px;display:flex;flex-direction:column;gap:12px;}
+.cte-group-lbl{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);font-weight:700;padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+.cte-row{display:flex;align-items:center;gap:9px;}
+.cte-row label{font-size:.72rem;flex:1;color:var(--text2);}
+.cte-swatch{width:28px;height:28px;border-radius:6px;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;overflow:hidden;padding:0;}
+.cte-swatch::-webkit-color-swatch-wrapper{padding:0;}
+.cte-swatch::-webkit-color-swatch{border:none;border-radius:4px;}
+.cte-hex{width:80px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:.7rem;padding:4px 7px;outline:none;}
+.cte-hex:focus{border-color:var(--accent);}
+.cte-preview{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;font-size:.74rem;}
+.cte-preview-title{font-weight:700;margin-bottom:6px;}
+.cte-presets{display:flex;flex-direction:column;gap:6px;}
+.cte-preset-row{display:flex;align-items:center;gap:7px;padding:6px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;font-size:.73rem;cursor:pointer;transition:.1s;}
+.cte-preset-row:hover{border-color:var(--accent);}
+.cte-preset-dot{width:14px;height:14px;border-radius:3px;flex-shrink:0;}
+.cte-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+</style>
+</head>
+<body class="theme-dark">
+
+<!-- ═══ HEADER ═══ -->
+<header class="hdr">
+  <div class="logo">RV</div>
+  <div class="hdr-titles">
+    <div class="hdr-title">Google Play Review Manager</div>
+    <div class="hdr-sub">Instantly pull user reviews from Play Console.</div>
+  </div>
+
+  <div class="hdr-r">
+    <!-- AUTH IN HEADER -->
+    <div class="hdr-auth" id="hdr-signout-area" style="display:none;align-items:center;gap:7px;">
+      <div class="auth-pill on"><span class="dot"></span><span>Authenticated</span></div>
+      <button class="btn btn-sm btn-secondary" id="btn-signout">Sign Out</button>
+    </div>
+    <div class="hdr-auth" id="hdr-signin-area" style="display:flex;align-items:center;gap:6px;">
+      <input type="password" id="auth-pin" class="pin-hdr" maxlength="2" placeholder="PIN" autocomplete="off" title="Enter PIN (last 2 chars of Client ID)"/>
+      <button class="btn btn-primary btn-sm" id="btn-signin">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Sign In
+      </button>
+      <span id="hdr-auth-err" style="font-size:.66rem;color:var(--danger);display:none;"></span>
+    </div>
+
+    <div class="hdr-sep"></div>
+  </div>
+</header>
+
+<div class="shell">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <!-- Fetch Settings -->
+  <div>
+    <div class="sec-lbl">Fetch Settings</div>
+    <div class="card">
+      <!-- <div class="field">
+        <label>Sort</label>
+        <select id="sort-order">
+          <option value="NEWEST">Newest First</option>
+          <option value="RATING">By Rating</option>
+          <option value="RELEVANCE">Relevance</option>
+        </select>
+      </div> -->
+
+      <div class="field">
+        <label>Date from</label>
+        <input type="date" id="date-from" />
+      </div>
+      <div class="field">
+        <label>Date to</label>
+        <input type="date" id="date-to" />
+      </div>
+      <div class="field">
+        <label>Max results</label>
+        <select id="max-results">
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="250">250</option>
+            <option value="250">500</option>
+            <option value="250">1000</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-fetch">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="1 4 1 10 7 10" />
+          <path d="M3.51 15a9 9 0 1 0 .49-3.32" />
+        </svg>
+        Fetch Reviews
+      </button>
+    </div>
+  </div>
+
+  <!-- App Selector -->
+  <div>
+    <div class="sec-lbl" style="display:flex;justify-content:space-between;align-items:center;">
+      Select Apps
+      <span id="sel-count" style="color:var(--accent2);font-size:.65rem;font-weight:600;"></span>
+    </div>
+    <div style="font-size:.65rem;color:var(--text3);margin-bottom:6px;">
+      Click = select one · Ctrl+click = multi-select
+    </div>
+
+    <div style="display:flex;gap:5px;margin-bottom:8px;">
+      <button class="btn btn-secondary btn-sm" id="btn-all-apps" style="flex:1;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Select All
+      </button>
+      <button class="btn btn-secondary btn-sm" id="btn-deselect-all" style="flex:1;" title="Deselect all apps">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Deselect
+      </button>
+    </div>
+
+    <!-- App Search -->
+    <div style="position:relative;margin-bottom:8px;">
+      <span style="position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;font-size:.8rem;">🔍</span>
+      <input type="text" id="app-search-input" placeholder="Search game / app…"
+        style="padding-left:28px;font-size:.72rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);color:var(--text);width:100%;outline:none;transition:.12s;"
+        oninput="filterAppList(this.value)"
+        onfocus="this.style.borderColor='var(--accent)'"
+        onblur="this.style.borderColor='var(--border)'"
+      />
+      <button id="app-search-clear" onclick="clearAppSearch()" title="Clear search"
+        style="position:absolute;right:7px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);font-size:.75rem;display:none;padding:0;line-height:1;">✕</button>
+    </div>
+    <div id="app-search-no-result" class="hidden" style="font-size:.7rem;color:var(--text3);text-align:center;padding:6px 0;">No apps match your search.</div>
+
+    <div style="margin-bottom:4px;">
+      <div class="cat-hdr" onclick="toggleCat('cat-kids')">
+        <span>🎮</span><span class="cat-name">Kids Games</span><span class="cat-badge" id="cc-kids">17</span><span id="arr-kids">▾</span>
+      </div>
+      <div class="app-list" id="cat-kids"></div>
+    </div>
+    <div style="margin-bottom:4px;">
+      <div class="cat-hdr" onclick="toggleCat('cat-parents')">
+        <span>👨‍👩‍👧</span><span class="cat-name">Parents Games</span><span class="cat-badge" id="cc-parents">16</span><span id="arr-parents">▾</span>
+      </div>
+      <div class="app-list" id="cat-parents"></div>
+    </div>
+    <div style="margin-bottom:4px;">
+      <div class="cat-hdr" onclick="toggleCat('cat-apps')">
+        <span>🛠️</span><span class="cat-name">Applications</span><span class="cat-badge" id="cc-apps">10</span><span id="arr-apps">▾</span>
+      </div>
+      <div class="app-list" id="cat-apps"></div>
+    </div>
+
+    <div class="mt1">
+      <span style="font-size:.66rem;color:var(--accent3);cursor:pointer;" onclick="toggleManual()">▸ Manual package</span>
+      <div id="manual-wrap" class="hidden mt1">
+        <input type="text" id="pkg-manual" placeholder="com.example.app"/>
+        <button class="btn btn-secondary btn-full btn-sm mt1" onclick="applyManual()">Add Package</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Selected apps -->
+  <div id="sel-apps-section" class="hidden">
+    <div class="sec-lbl">Selected</div>
+    <div id="sel-apps-list" style="display:flex;flex-direction:column;gap:5px;"></div>
+  </div>
+
+
+  <!-- AI Settings -->
+  <div>
+    <div class="sec-lbl">AI Reply</div>
+    <div class="card">
+      <label style="margin-bottom:4px;">Provider</label>
+      <div class="ai-tabs">
+        <button class="ai-tab on" id="ai-tab-claude" onclick="setAiProvider('claude')">🤖 Claude</button>
+        <button class="ai-tab" id="ai-tab-chatgpt" onclick="setAiProvider('chatgpt')">🧠 ChatGPT</button>
+      </div>
+      <div class="field" id="claude-key-field">
+        <label>Claude API Key</label>
+        <input type="password" id="claude-key" placeholder="sk-ant-…" autocomplete="off"/>
+      </div>
+      <div class="field hidden" id="openai-key-field">
+        <label>OpenAI API Key</label>
+        <input type="password" id="openai-key" placeholder="sk-…" autocomplete="off"/>
+      </div>
+      <div class="field">
+        <label>Reply Tone</label>
+        <select id="reply-tone">
+          <option value="friendly">Friendly & Warm</option>
+          <option value="professional">Professional</option>
+          <option value="apologetic">Apologetic</option>
+          <option value="excited">Excited</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  
+<div>
+    <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border);">
+
+    <div class="sec-lbl"></div>
+    <div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:11px;color:var(--cyan)"><b style="color:var(--cyan)">✶ Built like a weapon, use like a tool.
+            ✶</b> - by ex-code warrior</div>
+  </div>
+  </div>
+    </div>
+
+</div>
+
+  <!-- Theme picker at bottom of sidebar -->
+  <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border);">
+    <div class="sec-lbl">Appearance</div>
+    <div class="theme-wrap" id="theme-wrap">
+      <div class="theme-trigger" id="theme-trigger" onclick="toggleThemeDrop()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <span id="theme-name-lbl">Default Dark</span>
+        <span style="margin-left:auto;font-size:.6rem;opacity:.5;">▴</span>
+      </div>
+      <div class="theme-drop" id="theme-drop">
+        <div class="theme-grp">🌙 Dark</div>
+        <div class="theme-opt cur" data-t="theme-dark"     onclick="setTheme('theme-dark')">    <div class="theme-sw" style="background:linear-gradient(135deg,#07090f,#6366f1);"></div>Default Dark</div>
+        <div class="theme-opt"    data-t="theme-midnight"  onclick="setTheme('theme-midnight')"> <div class="theme-sw" style="background:linear-gradient(135deg,#08001a,#8b5cf6);"></div>Midnight Purple</div>
+        <div class="theme-opt"    data-t="theme-ocean"     onclick="setTheme('theme-ocean')">    <div class="theme-sw" style="background:linear-gradient(135deg,#020b18,#0ea5e9);"></div>Deep Ocean</div>
+        <div class="theme-opt"    data-t="theme-charcoal"  onclick="setTheme('theme-charcoal')"> <div class="theme-sw" style="background:linear-gradient(135deg,#111,#555);"></div>Charcoal</div>
+        <div class="theme-opt"    data-t="theme-forest"    onclick="setTheme('theme-forest')">   <div class="theme-sw" style="background:linear-gradient(135deg,#050e05,#4ade80);"></div>Forest</div>
+        <div class="theme-grp" style="margin-top:6px;">☀️ Light</div>
+        <div class="theme-opt"    data-t="theme-light"     onclick="setTheme('theme-light')">    <div class="theme-sw" style="background:linear-gradient(135deg,#f8fafc,#6366f1);border-color:#e2e8f0;"></div>Clean White</div>
+        <div class="theme-opt"    data-t="theme-paper"     onclick="setTheme('theme-paper')">    <div class="theme-sw" style="background:linear-gradient(135deg,#faf7f2,#b45309);border-color:#e8dfc8;"></div>Warm Paper</div>
+        <div class="theme-opt"    data-t="theme-rose"      onclick="setTheme('theme-rose')">     <div class="theme-sw" style="background:linear-gradient(135deg,#fff1f2,#e11d48);border-color:#fda4af;"></div>Rose</div>
+        <div class="theme-opt"    data-t="theme-sky"       onclick="setTheme('theme-sky')">      <div class="theme-sw" style="background:linear-gradient(135deg,#f0f9ff,#0284c7);border-color:#bae6fd;"></div>Sky Blue</div>
+        <div class="theme-opt"    data-t="theme-lavender"  onclick="setTheme('theme-lavender')"> <div class="theme-sw" style="background:linear-gradient(135deg,#f5f3ff,#7c3aed);border-color:#ddd6fe;"></div>Lavender</div>
+        <div class="theme-opt"    data-t="theme-sand"      onclick="setTheme('theme-sand')">     <div class="theme-sw" style="background:linear-gradient(135deg,#fefce8,#92400e);border-color:#fde68a;"></div>Sand</div>
+        <div style="border-top:1px solid var(--border);margin:6px 0;"></div>
+        <div class="theme-opt" onclick="openThemeEditor()" style="color:var(--accent3);">
+          <div class="theme-sw" style="background:conic-gradient(#f87171,#fbbf24,#4ade80,#38bdf8,#a78bfa,#f87171);"></div>
+          🎨 Customize Colors…
+        </div>
+      </div>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<section class="main">
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <span class="toolbar-title" id="reviews-title">Reviews</span>
+    <div class="tsep"></div>
+    <div class="search-box">
+      <span class="search-ico"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      <input type="text" id="search-input" placeholder="Search reviews…"/>
+    </div>
+    <div class="chips">
+      <div class="chip on" data-star="all">All ⭐</div>
+      <div class="chip c5" data-star="5">5★</div>
+      <div class="chip c4" data-star="4">4★</div>
+      <div class="chip c3" data-star="3">3★</div>
+      <div class="chip c2" data-star="2">2★</div>
+      <div class="chip c1" data-star="1">1★</div>
+    </div>
+    <div class="tsep"></div>
+    <button class="btn btn-secondary btn-sm" id="btn-translate-all">🌐 Translate All</button>
+    <button class="btn btn-secondary btn-sm" id="btn-csv">⬇ CSV</button>
+    <button class="btn btn-secondary btn-sm" id="btn-json">⬇ JSON</button>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat-item act" data-star="all"><div class="stat-num" id="sn-all">—</div><div class="stat-lbl">Total</div></div>
+    <div class="stat-item" data-star="5"><div class="stat-num c5" id="sn-5">—</div><div class="stat-lbl">★★★★★</div></div>
+    <div class="stat-item" data-star="4"><div class="stat-num c4" id="sn-4">—</div><div class="stat-lbl">★★★★</div></div>
+    <div class="stat-item" data-star="3"><div class="stat-num c3" id="sn-3">—</div><div class="stat-lbl">★★★</div></div>
+    <div class="stat-item" data-star="2"><div class="stat-num c2" id="sn-2">—</div><div class="stat-lbl">★★</div></div>
+    <div class="stat-item" data-star="1"><div class="stat-num c1" id="sn-1">—</div><div class="stat-lbl">★</div></div>
+    <!-- spacer pushes the following to the right -->
+    <div style="flex:1;"></div>
+    <div class="stat-item stat-right" style="border-left:1px solid var(--border);border-right:1px solid var(--border);"><div class="stat-num" id="sn-avg" style="color:var(--star);">—</div><div class="stat-lbl">⭐ Avg Rating</div></div>
+    <div class="stat-item stat-right" style="border-right:1px solid var(--border);"><div class="stat-num" style="color:var(--green);" id="sn-replied">—</div><div class="stat-lbl">✅ Replied</div></div>
+    <div class="stat-item stat-right"><div class="stat-num" style="color:var(--warn);" id="sn-pending">—</div><div class="stat-lbl">⏳ Pending</div></div>
+  </div>
+
+  <!-- Fetch progress with cancel -->
+  <div id="prog-wrap" class="hidden" style="padding:8px 18px;background:var(--surface2);border-bottom:1px solid var(--border);">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div class="prog-wrap" style="flex:1;"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+      <button id="btn-cancel-fetch" class="btn btn-sm" style="background:rgba(248,113,113,.12);color:var(--danger);border:1px solid rgba(248,113,113,.3);padding:3px 10px;font-size:.68rem;flex-shrink:0;">
+        ✕ Cancel
+      </button>
+    </div>
+    <div id="prog-lbl" style="font-size:.63rem;color:var(--text2);"></div>
+  </div>
+
+  <div id="main-alert" class="hidden" style="margin:8px 18px 0;"></div>
+
+  <!-- Reviews -->
+  <div class="reviews-area" id="reviews-area">
+    <div class="empty-state">
+      <div class="empty-ico">⭐</div>
+      <div style="font-weight:700;">No reviews loaded</div>
+      <div style="font-size:.76rem;color:var(--text2);">Sign in → select app(s) → Fetch Reviews</div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination hidden" id="pagination">
+    <span class="pg-info" id="pg-info"></span>
+    <button class="btn btn-secondary btn-sm hidden" id="btn-load-more">Load More</button>
+  </div>
+
+</section>
+</div>
+
+<!-- ═══ CUSTOM THEME EDITOR ═══ -->
+<div class="cte-overlay hidden" id="cte-overlay">
+  <div class="cte-modal">
+    <div class="cte-header">
+      <span style="font-size:1.3rem;">🎨</span>
+      <div class="cte-title">Custom Theme Editor</div>
+      <div id="cte-current-name" style="font-size:.72rem;color:var(--text2);background:var(--surface2);padding:3px 9px;border-radius:8px;border:1px solid var(--border);">Custom</div>
+      <button class="btn btn-secondary btn-sm" onclick="closeThemeEditor()">✕ Close</button>
+    </div>
+    <div class="cte-body">
+      <!-- Left: color pickers -->
+      <div class="cte-left" id="cte-pickers">
+        <div class="cte-group-lbl">🖼 Background</div>
+        <div class="cte-row"><label>Page background</label><input type="color" class="cte-swatch" data-var="--bg"/><input type="text" class="cte-hex" data-var="--bg" maxlength="7"/></div>
+        <div class="cte-row"><label>Surface (panels)</label><input type="color" class="cte-swatch" data-var="--surface"/><input type="text" class="cte-hex" data-var="--surface" maxlength="7"/></div>
+        <div class="cte-row"><label>Surface 2 (cards)</label><input type="color" class="cte-swatch" data-var="--surface2"/><input type="text" class="cte-hex" data-var="--surface2" maxlength="7"/></div>
+        <div class="cte-row"><label>Surface 3 (hover)</label><input type="color" class="cte-swatch" data-var="--surface3"/><input type="text" class="cte-hex" data-var="--surface3" maxlength="7"/></div>
+
+        <div class="cte-group-lbl" style="margin-top:8px;">📝 Text</div>
+        <div class="cte-row"><label>Primary text</label><input type="color" class="cte-swatch" data-var="--text"/><input type="text" class="cte-hex" data-var="--text" maxlength="7"/></div>
+        <div class="cte-row"><label>Secondary text</label><input type="color" class="cte-swatch" data-var="--text2"/><input type="text" class="cte-hex" data-var="--text2" maxlength="7"/></div>
+        <div class="cte-row"><label>Muted text</label><input type="color" class="cte-swatch" data-var="--text3"/><input type="text" class="cte-hex" data-var="--text3" maxlength="7"/></div>
+
+        <div class="cte-group-lbl" style="margin-top:8px;">🎨 Accent Colors</div>
+        <div class="cte-row"><label>Primary accent</label><input type="color" class="cte-swatch" data-var="--accent"/><input type="text" class="cte-hex" data-var="--accent" maxlength="7"/></div>
+        <div class="cte-row"><label>Secondary accent</label><input type="color" class="cte-swatch" data-var="--accent2"/><input type="text" class="cte-hex" data-var="--accent2" maxlength="7"/></div>
+        <div class="cte-row"><label>Tertiary accent</label><input type="color" class="cte-swatch" data-var="--accent3"/><input type="text" class="cte-hex" data-var="--accent3" maxlength="7"/></div>
+
+        <div class="cte-group-lbl" style="margin-top:8px;">🔲 Borders</div>
+        <div class="cte-row"><label>Border</label><input type="color" class="cte-swatch" data-var="--border"/><input type="text" class="cte-hex" data-var="--border" maxlength="7"/></div>
+        <div class="cte-row"><label>Border 2 (hover)</label><input type="color" class="cte-swatch" data-var="--border2"/><input type="text" class="cte-hex" data-var="--border2" maxlength="7"/></div>
+
+        <div class="cte-group-lbl" style="margin-top:8px;">🚦 Status Colors</div>
+        <div class="cte-row"><label>Success / Green</label><input type="color" class="cte-swatch" data-var="--green"/><input type="text" class="cte-hex" data-var="--green" maxlength="7"/></div>
+        <div class="cte-row"><label>Warning</label><input type="color" class="cte-swatch" data-var="--warn"/><input type="text" class="cte-hex" data-var="--warn" maxlength="7"/></div>
+        <div class="cte-row"><label>Danger / Red</label><input type="color" class="cte-swatch" data-var="--danger"/><input type="text" class="cte-hex" data-var="--danger" maxlength="7"/></div>
+      </div>
+
+      <!-- Right: preview + saved presets -->
+      <div class="cte-right">
+        <!-- Live mini-preview -->
+        <div>
+          <div class="cte-group-lbl">👁 Live Preview</div>
+          <div class="cte-preview" id="cte-preview">
+            <div class="cte-preview-title">Sample Review Card</div>
+            <div style="display:flex;gap:7px;align-items:center;margin-bottom:6px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;">J</div>
+              <div>
+                <div style="font-weight:700;font-size:.78rem;color:var(--text);">John D.</div>
+                <div style="font-size:.64rem;color:var(--text2);">★★★★☆ · Jan 15, 2025</div>
+              </div>
+              <span style="margin-left:auto;font-size:.6rem;background:var(--tag-bg);border:1px solid var(--tag-border);color:var(--accent2);padding:2px 7px;border-radius:5px;font-weight:600;">App Name</span>
+            </div>
+            <div style="font-size:.76rem;color:var(--text2);line-height:1.5;margin-bottom:8px;">Great app! Works perfectly and the interface is clean and intuitive.</div>
+            <div style="display:flex;gap:5px;">
+              <button style="font-size:.68rem;padding:3px 9px;border-radius:6px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:600;">💬 Reply</button>
+              <!-- <button style="font-size:.68rem;padding:3px 9px;border-radius:6px;background:var(--surface2);color:var(--text);border:1px solid var(--border2);cursor:pointer;">🤖 AI Reply</button> -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Stat bar preview -->
+        <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;">
+          <div style="flex:1;padding:8px;text-align:center;background:var(--sel-bg,rgba(99,102,241,.08));border-right:1px solid var(--border);">
+            <div style="font-size:1rem;font-weight:800;color:var(--text);">47</div>
+            <div style="font-size:.58rem;color:var(--text2);">Total</div>
+          </div>
+          <div style="flex:1;padding:8px;text-align:center;background:var(--surface2);border-right:1px solid var(--border);">
+            <div style="font-size:1rem;font-weight:800;color:#22c55e;">31</div>
+            <div style="font-size:.58rem;color:var(--text2);">5★</div>
+          </div>
+          <div style="flex:1;padding:8px;text-align:center;background:var(--surface2);">
+            <div style="font-size:1rem;font-weight:800;color:var(--accent);background:var(--chip-bg,rgba(99,102,241,.15));border-radius:5px;">4.3</div>
+            <div style="font-size:.58rem;color:var(--text2);">⭐ Avg</div>
+          </div>
+        </div>
+
+        <!-- Save section -->
+        <div>
+          <div class="cte-group-lbl">💾 Save Custom Theme</div>
+          <div style="display:flex;gap:6px;margin-bottom:8px;">
+            <input type="text" id="cte-name-input" placeholder="My Custom Theme" style="flex:1;font-size:.75rem;"/>
+            <button class="btn btn-primary btn-sm" onclick="saveCustomTheme()">Save</button>
+          </div>
+        </div>
+
+        <!-- Saved presets -->
+        <div>
+          <div class="cte-group-lbl" style="display:flex;align-items:center;justify-content:space-between;">
+            <span>📋 Saved Presets</span>
+            <button onclick="loadPresetsIntoUI()" style="font-size:.6rem;background:none;border:none;color:var(--accent3);cursor:pointer;padding:0;">↻ Refresh</button>
+          </div>
+          <div id="cte-presets-list" class="cte-presets">
+            <div style="font-size:.72rem;color:var(--text3);text-align:center;padding:12px;">No saved presets yet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cte-footer">
+      <button class="btn btn-secondary btn-sm" onclick="resetToBaseTheme()">↺ Reset to Current Theme</button>
+      <button class="btn btn-secondary btn-sm" onclick="copyThemeCSS()">📋 Copy as CSS</button>
+      <div style="margin-left:auto;font-size:.68rem;color:var(--text3);">Changes apply live · Saved to browser storage</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   CREDENTIAL PROTECTION
+   Client ID is stored as 4 separate base64 fragments
+   that individually look meaningless. At runtime they
+   are joined, then immediately XOR-obfuscated with a
+   random ephemeral key. Never stored as plaintext.
+═══════════════════════════════════════════════════ */
+(function(){
+  const _f=["NTY2ODg5MTIwNzAzLTdqam1w","OG9uZDNxMmtubml0Zmswa3Zu","bTRhc2RlNW1rLmFwcHMuZ29v","Z2xldXNlcmNvbnRlbnQuY29t"];
+  const _p="bWs=";
+  const _k=Array.from({length:96},()=>Math.random()*256|0);
+  const _x=s=>s.split('').map((c,i)=>String.fromCharCode(c.charCodeAt(0)^_k[i%_k.length])).join('');
+  window.__C={_id:_x(_f.map(p=>atob(p)).join('')),_pin:_x(atob(_p)),get:t=>_x(t)};
+})();
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  /* ═══════════════════════════════════════
+     APP DATA
+  ═══════════════════════════════════════ */
+  const APPS = {
+    kids: [
+     { name: "123 Numbers - Count & Tracing", pkg: "com.rvappstudios.numbers123.toddler.counting.tracing" },
+      { name: "ABC Kids: Tracing & Phonics", pkg: "com.rvappstudios.abc_kids_toddler_tracing_phonics" },
+      { name: "Baby Games: Piano & Baby Phone", pkg: "com.rvappstudios.baby.games.piano.phone.kids" },
+      { name: "Baby Phone & Kids Games", pkg: "com.rvappstudios.baby.phone.kids.games.toddler.learning.apps.lucas.and.friends" },
+      { name: "Color Kids: Coloring Games", pkg: "com.rvappstudios.shapes.colors.toddler" },
+      { name: "Coloring Games: Color & Paint", pkg: "com.rvappstudios.kids.coloring.book.color.painting" },
+      { name: "Drawing Games: Draw & Color", pkg: "com.rvappstudios.kids.drawing.games.coloring.book.paint" },
+      { name: "Kids Games: For Toddlers 3-5", pkg: "com.rvappstudios.baby.toddler.kids.games.learning.activity" },
+      { name: "Kids Math: Math Games for Kids", pkg: "com.rvappstudios.montessori.math.games.kids.number.counting" },
+      { name: "Kids Multiplication Math Games", pkg: "com.rvappstudios.kids.multiplication.games.multiply.math" },
+      { name: "Kids Music: Piano, Xylo, Drums", pkg: "com.rvappstudios.kids.games.music.baby.piano.songs.lucas.and.friends" },
+      { name: "Kids Toddler & Preschool Games", pkg: "com.rvappstudios.toddler.preschool.kids.learning.games" },
+      { name: "Learn to Read: Kids Games", pkg: "com.rvappstudios.sight.words.phonics.reading.kids.games" },
+      { name: "Math Games: Math for Kids", pkg: "com.rvappstudios.math.games.kids.addition.subtraction.multiplication.division" },
+      { name: "Math Kids: Math Games For Kids", pkg: "com.rvappstudios.math.kids.counting" },
+      { name: "Puzzle Kids: Jigsaw Puzzles", pkg: "com.rvappstudios.jigsaw.puzzles.kids" },
+      { name: "Spelling & Phonics: Kids Games", pkg: "com.rvappstudios.abc.spelling.toddler.spell.phonics" },
+    ],
+    parents: [
+     { name: "Balloon Pop: Match 3 Games", pkg: "com.rvappstudios.match3_balloon_puzzle_game" },
+      { name: "Basketball Games: Hoop Puzzles", pkg: "com.rvappstudios.basketball" },
+      { name: "Block Puzzle: Block Games", pkg: "com.rvappstudios.block.jigsaw.puzzle.game.hexa.color" },
+      { name: "Block Puzzles: Hexa Block Game", pkg: "com.rvappstudios.block.puzzle.games.classic.board" },
+      { name: "Bloody Monsters: Bouncy Bullet", pkg: "com.rvappstudios.bloodymonsters" },
+      { name: "Bubble Crusher: Bubble Pop", pkg: "com.rvappstudios.bubblecrusher2" },
+      { name: "Bubble Pop: Bubble Shooter", pkg: "com.rvappstudios.bubble.shooter.shoot.bubbles" },
+      { name: "Bubble Shooter: Pastry Pop", pkg: "com.rvappstudios.bubble.pop.bubble.shooter.puzzle.game.match3" },
+      { name: "Cake Blast: Match 3 Games", pkg: "com.rvappstudios.cake.match3.puzzle.game" },
+      { name: "Christmas Cookie: Match 3 Game", pkg: "com.rvappstudios.christmascookie" },
+      { name: "Dice Puzzle - Dice Merge Game", pkg: "com.rvappstudios.dice.games.merge.puzzle" },
+      { name: "Find The Difference: Find It", pkg: "com.rvappstudios.find.odd.one.out.spot.puzzle.game" },
+      { name: "Find The Differences - Spot it", pkg: "com.rvappstudios.puzzle.game.find.difference.ftd" },
+      { name: "Finger Slayer", pkg: "com.rvappstudios.fingerslayer" },
+      { name: "Fruit Cube Blast", pkg: "com.rvappstudios.tap.blast.match3.puzzle" },
+      { name: "Gummy Paradise: Match 3 Games", pkg: "com.rvappstudios.gummy.paradise.drag.match" },
+      { name: "Ice Cream Paradise: Match 3", pkg: "com.rvappstudios.ice.cream.paradise.match3" },
+      { name: "Jewel Gems: Jewel Games", pkg: "com.rvappstudios.jewel.gem.tap.cube.blast.puzzle.match3.game" },
+      { name: "Jigsaw Puzzles Blocks", pkg: "com.rvappstudios.tangram.jigsaw.puzzles.block.game" },
+      { name: "Jigsaw Puzzles Hexa", pkg: "com.rvappstudios.hexa.jigsaw.puzzle.block.game" },
+      { name: "Jigsaw Puzzles: Picture Puzzle", pkg: "com.rvappstudios.jigsaw.puzzles" },
+      { name: "Match Tiles: Block Puzzle Game", pkg: "com.rvappstudios.tile.match3.block.puzzle.game" },
+      { name: "Maze Games: Labyrinth Puzzles", pkg: "com.rvappstudios.maze.games.puzzle.mazes.labyrinth" },
+      { name: "Onnet Connect: Tile Matching", pkg: "com.rvappstudios.tile.connect.link.puzzle.game" },
+      { name: "Puzzles: Jigsaw Puzzle Games", pkg: "com.rvappstudios.jigsaw.puzzles.picture.block.games" },
+      { name: "Spot the Differences - Find It", pkg: "com.rvappstudios.find.differences.spot.difference.puzzle.game" },
+      { name: "Tangram Puzzle: Polygrams Game", pkg: "com.rvappstudios.tangram.blocks.puzzle.brain.games" },
+      { name: "Tile Puzzle Game: Tiles Match", pkg: "com.rvappstudios.tile.match.tiles.puzzle.game" },
+      { name: "Veggies Cut: Logic Puzzle Game", pkg: "com.rvappstudios.veggies.cut.logic.puzzle.adult.game" },
+      { name: "Word Pics - Word Games", pkg: "com.rvappstudios.two.pics.one.word.puzzle.game" },
+      { name: "Word Puzzle: Word Games", pkg: "com.rvappstudios.four.pics.one.word.pic.to.words.puzzle.game" },
+      { name: "Word Search Games: Word Find", pkg: "com.rvappstudios.word.search.puzzle.game" },
+      { name: "Word Spin: Word Games", pkg: "com.rvappstudios.pic.word.games.guess.picture.puzzle" },
+      { name: "Zombie Heroes: Zombie Games", pkg: "com.rvappstudios.lastheroes" },
+      { name: "Zombie Ragdoll - Zombie Games", pkg: "com.rvappstudios.zombieragdoll" },
+      { name: "Zombie Shooting: Archery Games", pkg: "com.rvappstudios.archeryblitz1" },
+      { name: "Zombie Slice: Zombie Games", pkg: "com.rvappstudios.zombiecarnage" },
+    ],
+    apps: [
+    { name: "Alarm Clock: Mornings & Naps", pkg: "com.rvappstudios.alarm.clock.smart.sleep.timer.music" },
+      { name: "App Locker: Privacy Apps Lock", pkg: "com.rvappstudios.applock.protect.lock.app" },
+      { name: "Digital Compass: Map & GPS", pkg: "com.rvappstudios.compass.offline.direction" },
+      { name: "Flash Alerts LED - Call, SMS", pkg: "com.rvappstudios.Flash.Alerts.LED.Call.SMS.Flashlight" },
+      { name: "Flashlight: Torch Light", pkg: "com.rvappstudios.flashlight" },
+      { name: "Magnifying Glass + Flashlight", pkg: "com.rvappstudios.magnifyingglass" },
+      { name: "Mirror: Beauty Camera", pkg: "com.rvappstudios.mirror" },
+      { name: "QR Scanner and Generator", pkg: "com.rvappstudios.qr.barcode.scanner.reader.generator" },
+      { name: "Sleep Timer: Turn Music Off", pkg: "com.rvappstudios.sleep.timer.off.music.relax" },
+      { name: "Smart Calc: Daily Calculator", pkg: "com.rvappstudios.calculator.free.app" },
+      { name: "Stopwatch and Timer", pkg: "com.rvappstudios.timer.multiple.alarm.stopwatch" },
+    ],
+  };
+
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+const state={
+  token:null, tokenExpiry:null,
+  selectedApps:[],
+  allReviews:[], filtered:[],
+  starFilter:'all', searchQ:'',
+  pageTokens:{}, dateFrom:null, dateTo:null,
+  aiProvider:'claude',
+};
+const BASE='https://androidpublisher.googleapis.com/androidpublisher/v3/applications';
+
+/* ═══════════════════════════════════════
+   THEMES
+═══════════════════════════════════════ */
+const THEME_LABELS={
+  'theme-dark':'Default Dark','theme-midnight':'Midnight Purple','theme-ocean':'Deep Ocean',
+  'theme-charcoal':'Charcoal','theme-forest':'Forest',
+  'theme-light':'Clean White','theme-paper':'Warm Paper','theme-rose':'Rose',
+};
+
+function setTheme(t){
+  document.body.className=t;
+  $('theme-name-lbl').textContent=THEME_LABELS[t]||t;
+  document.querySelectorAll('.theme-opt').forEach(o=>o.classList.toggle('cur',o.dataset.t===t));
+  closeThemeDrop();
+  try{localStorage.setItem('rv_theme',t);}catch(e){}
+}
+function toggleThemeDrop(){$('theme-drop').classList.toggle('open');}
+function closeThemeDrop(){$('theme-drop').classList.remove('open');}
+document.addEventListener('click',e=>{if(!$('theme-wrap').contains(e.target))closeThemeDrop();});
+
+/* ═══════════════════════════════════════
+   AUTH
+═══════════════════════════════════════ */
+function initAuth(){
+  const pin=$('auth-pin').value.trim();
+  if(pin.toLowerCase()!==window.__C.get(window.__C._pin).toLowerCase()){
+    showAuthErr('Incorrect PIN'); return;
+  }
+  if(!window.google){showAuthErr('Google not loaded');return;}
+  google.accounts.oauth2.initTokenClient({
+    client_id:window.__C.get(window.__C._id),
+    scope:'https://www.googleapis.com/auth/androidpublisher',
+    callback:onToken,
+  }).requestAccessToken();
+}
+function onToken(resp){
+  if(resp.error){showAuthErr(resp.error_description||resp.error);return;}
+  state.token=resp.access_token;
+  state.tokenExpiry=Date.now()+resp.expires_in*1000;
+  $('hdr-signin-area').style.display='none';
+  $('hdr-signout-area').style.display='flex';
+  hideAuthErr();
+}
+function signOut(){
+  if(state.token&&window.google)google.accounts.oauth2.revoke(state.token);
+  state.token=null;state.tokenExpiry=null;
+  $('hdr-signin-area').style.display='flex';
+  $('hdr-signout-area').style.display='none';
+  $('auth-pin').value='';
+}
+function showAuthErr(msg){const e=$('hdr-auth-err');e.textContent='❌ '+msg;e.style.display='inline';setTimeout(()=>e.style.display='none',4000);}
+function hideAuthErr(){$('hdr-auth-err').style.display='none';}
+function requireAuth(){
+  if(!state.token)throw new Error('Sign in first — enter PIN in the header bar.');
+  if(state.tokenExpiry&&Date.now()>state.tokenExpiry)throw new Error('Token expired — sign in again.');
+}
+function authHdr(){return{'Authorization':'Bearer '+state.token,'Content-Type':'application/json'};}
+
+/* ═══════════════════════════════════════
+   AI PROVIDER TOGGLE
+═══════════════════════════════════════ */
+function setAiProvider(p){
+  state.aiProvider=p;
+  $('ai-tab-claude').classList.toggle('on',p==='claude');
+  $('ai-tab-chatgpt').classList.toggle('on',p==='chatgpt');
+  $('claude-key-field').classList.toggle('hidden',p!=='claude');
+  $('openai-key-field').classList.toggle('hidden',p!=='chatgpt');
+}
+
+/* ═══════════════════════════════════════
+   APP LIST + MULTI-SELECT
+═══════════════════════════════════════ */
+const CAT={kids:{e:'🎮'},parents:{e:'👨‍👩‍👧'},apps:{e:'🛠️'}};
+
+function buildAppLists(){
+  Object.entries(APPS).forEach(([cat,list])=>{
+    $('cc-'+cat).textContent=list.length;
+    const cont=$('cat-'+cat);
+    list.forEach(app=>{
+      const el=document.createElement('div');
+      el.className='app-item';
+      el.dataset.pkg=app.pkg;
+      el.innerHTML=`<div class="app-ico" id="ai-${app.pkg.replace(/\W/g,'_')}">${CAT[cat].e}</div>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(app.name)}</span>
+        <span class="sel-tick hidden">✓</span>`;
+      el.addEventListener('click',e=>onAppClick(app,el,e));
+      cont.appendChild(el);
+      loadIconMini(app.pkg); // load icon for sidebar list item
+    });
+  });
+}
+
+function onAppClick(app,el,e){
+  const ctrl=e.ctrlKey||e.metaKey;
+  const already=state.selectedApps.some(a=>a.pkg===app.pkg);
+  if(!ctrl){
+    // single-select: clear all first
+    state.selectedApps=[];
+    document.querySelectorAll('.app-item').forEach(x=>{x.classList.remove('sel');x.querySelector('.sel-tick').classList.add('hidden');});
+  }
+  if(already&&ctrl){
+    state.selectedApps=state.selectedApps.filter(a=>a.pkg!==app.pkg);
+    el.classList.remove('sel');
+    el.querySelector('.sel-tick').classList.add('hidden');
+  } else if(!already){
+    state.selectedApps.push(app);
+    el.classList.add('sel');
+    el.querySelector('.sel-tick').classList.remove('hidden');
+  }
+  refreshSelPanel();
+}
+
+function refreshSelPanel(){
+  const list=state.selectedApps;
+  $('sel-count').textContent=list.length?list.length+' selected':'';
+  if(!list.length){$('sel-apps-section').classList.add('hidden');return;}
+  $('sel-apps-section').classList.remove('hidden');
+  const cont=$('sel-apps-list');
+  cont.innerHTML='';
+  list.forEach(app=>{
+    const row=document.createElement('div');
+    row.className='sel-row';
+    const safeId='sir-'+app.pkg.replace(/\W/g,'_');
+    const storeUrl=`https://play.google.com/store/apps/details?id=${encodeURIComponent(app.pkg)}`;
+    row.innerHTML=`
+      <div class="sel-row-ico" id="${safeId}">
+        <img src="" alt="" id="${safeId}-img"
+          style="display:none;width:100%;height:100%;object-fit:cover;border-radius:5px;"/>
+        <span id="${safeId}-em">${CAT[getCat(app.pkg)]?.e||'📱'}</span>
+      </div>
+      <div style="min-width:0;flex:1;overflow:hidden;">
+        <div class="sel-row-name">${esc(app.name)}</div>
+        <a href="${storeUrl}" target="_blank" rel="noopener"
+          style="font-size:.6rem;color:var(--accent3);font-family:var(--mono);display:block;
+                 overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none;
+                 max-width:100%;"
+          title="${esc(app.pkg)}">${esc(app.pkg)} ↗</a>
+      </div>`;
+    cont.appendChild(row);
+    // Load icon into the sel panel
+    fetchIconUrl(app.pkg).then(url=>{
+      if(!url)return;
+      const img=$(safeId+'-img');
+      const em=$(safeId+'-em');
+      if(!img)return;
+      img.onload=()=>{img.style.display='block';if(em)em.style.display='none';};
+      img.onerror=()=>{};
+      img.src=url;
+    });
+  });
+}
+
+function getCat(pkg){
+  for(const [k,list] of Object.entries(APPS)){if(list.some(a=>a.pkg===pkg))return k;}
+  return 'apps';
+}
+
+/* ═══════════════════════════════════════
+   ICON LOADING
+   Fetches Play Store og:image via CORS proxies.
+   Multiple extraction patterns, correct URL cleaning.
+   Results cached in state.iconCache permanently.
+═══════════════════════════════════════ */
+async function fetchIconUrl(pkg){
+  if(state.iconCache&&state.iconCache[pkg])return state.iconCache[pkg];
+
+  const storeUrl=`https://play.google.com/store/apps/details?id=${encodeURIComponent(pkg)}&hl=en`;
+
+  // Get raw HTML from the Play Store page via CORS proxies
+  async function getPageHtml(){
+    const tries=[
+      // allorigins /raw — fastest, plain HTML response
+      ()=>fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(storeUrl)}`,{signal:AbortSignal.timeout(10000)}),
+      // allorigins /get — JSON wrapper {contents:"..."}
+      async ()=>{
+        const r=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(storeUrl)}`,{signal:AbortSignal.timeout(10000)});
+        if(!r.ok)throw new Error('bad');
+        const j=await r.json(); return {ok:true,text:async()=>j.contents||''};
+      },
+      // corsproxy.io
+      ()=>fetch(`https://corsproxy.io/?${storeUrl}`,{signal:AbortSignal.timeout(10000)}),
+      // codetabs proxy
+      ()=>fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(storeUrl)}`,{signal:AbortSignal.timeout(10000)}),
+    ];
+    for(const t of tries){
+      try{
+        const r=await t();
+        if(!r||!r.ok)continue;
+        const html=await r.text();
+        if(html&&html.length>1000)return html;
+      }catch(e){continue;}
+    }
+    return null;
+  }
+
+  // Extract the icon URL from page HTML
+  // og:image on Play Store is always the 512×512 app icon
+  function extractIconUrl(html){
+    if(!html||html.length<500)return null;
+
+    // Strategy 1: og:image meta tag (most reliable — always present in Play Store HTML)
+    // Format: <meta property="og:image" content="https://play-lh...=w512-h512-rw">
+    const ogPatterns=[
+      /property=["']og:image["'][^>]*content=["'](https:\/\/[^"']+)["']/i,
+      /content=["'](https:\/\/[^"']+)["'][^>]*property=["']og:image["']/i,
+      /name=["']og:image["'][^>]*content=["'](https:\/\/[^"']+)["']/i,
+    ];
+    for(const p of ogPatterns){
+      const m=html.match(p);
+      if(m&&m[1]&&m[1].includes('play-lh.googleusercontent.com')){
+        // Clean HTML entities, then replace size with high-res
+        let url=m[1].replace(/&amp;/g,'&').replace(/&#x3D;/g,'=');
+        // Normalize size: replace any =w...-h...-rw or =s...-rw with our desired size
+        url=url.replace(/=w\d+-h\d+(-rw)?$/,'=s128-rw')
+               .replace(/=s\d+(-rw)?$/,'=s128-rw')
+               .replace(/=w\d+(-rw)?$/,'=s128-rw');
+        // If no size suffix at all, add one
+        if(!url.match(/=s\d+/))url+='=s128-rw';
+        return url;
+      }
+    }
+
+    // Strategy 2: JSON-LD or embedded script data
+    const jsonLdMatch=html.match(/"image"\s*:\s*"(https:\/\/play-lh\.googleusercontent\.com\/[^"]{20,})"/);
+    if(jsonLdMatch){
+      let url=jsonLdMatch[1].replace(/\\u003d/g,'=').replace(/&amp;/g,'&');
+      url=url.replace(/=w\d+-h\d+(-rw)?$/,'=s128-rw').replace(/=s\d+(-rw)?$/,'=s128-rw');
+      if(!url.match(/=s\d+/))url+='=s128-rw';
+      return url;
+    }
+
+    // Strategy 3: Direct play-lh URL in HTML (full URL form)
+    const directMatch=html.match(/https:\/\/play-lh\.googleusercontent\.com\/[A-Za-z0-9_\-]{20,}(?:=[A-Za-z0-9_\-]+)?/);
+    if(directMatch){
+      let url=directMatch[0];
+      url=url.replace(/=w\d+-h\d+(-rw)?$/,'=s128-rw').replace(/=s\d+(-rw)?$/,'=s128-rw');
+      if(!url.match(/=s\d+/))url+='=s128-rw';
+      return url;
+    }
+
+    return null;
+  }
+
+  try{
+    const html=await getPageHtml();
+    const url=extractIconUrl(html);
+    if(url){
+      if(!state.iconCache)state.iconCache={};
+      state.iconCache[pkg]=url;
+      return url;
+    }
+  }catch(e){console.warn('Icon fetch error for',pkg,e.message);}
+  return null;
+}
+
+// Inject icon into any <img> element by ID, hiding sibling fallback <span>
+async function loadIconInto(pkg,imgId,boxId){
+  const imgEl=$(imgId);if(!imgEl)return;
+  const url=await fetchIconUrl(pkg);
+  if(url){
+    imgEl.onload=()=>{imgEl.style.display='block';const box=$(boxId);if(box){const sp=box.querySelector('span');if(sp)sp.style.display='none';}};
+    imgEl.onerror=()=>{};
+    imgEl.src=url;
+  }
+}
+
+// Inject icon into a sidebar app-list item (small square icon element)
+async function loadIconMini(pkg){
+  const el=$('ai-'+pkg.replace(/\W/g,'_'));if(!el)return;
+  const url=await fetchIconUrl(pkg);
+  if(url){
+    const img=new Image();
+    img.onload=()=>{el.innerHTML='';el.appendChild(img);};
+    img.onerror=()=>{};
+    img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:3px;';
+    img.src=url;
+  }
+}
+
+function toggleCat(id){const el=$(id);el.style.display=el.style.display==='none'?'flex':'none';}
+function toggleManual(){$('manual-wrap').classList.toggle('hidden');}
+function applyManual(){
+  const v=$('pkg-manual').value.trim();
+  if(!v)return;
+  const app={name:v,pkg:v};
+  if(!state.selectedApps.some(a=>a.pkg===v))state.selectedApps.push(app);
+  refreshSelPanel();
+}
+
+/* ═══════════════════════════════════════
+   REVIEWS API
+═══════════════════════════════════════ */
+async function apiFetch(url,opts={}){
+  const r=await fetch(url,opts);
+  const body=await r.json().catch(()=>({}));
+  if(!r.ok)throw Object.assign(new Error(body?.error?.message||'HTTP '+r.status),{body});
+  return body;
+}
+async function fetchPkg(pkg,token){
+  const p=new URLSearchParams({maxResults:$('max-results').value});
+  if(token)p.set('token',token);
+  return apiFetch(`${BASE}/${pkg}/reviews?${p}`,{headers:authHdr()});
+}
+
+/* ═══════════════════════════════════════
+   FETCH REVIEWS — with cancellation support
+═══════════════════════════════════════ */
+let fetchController=null; // AbortController for current fetch
+
+function cancelFetch(){
+  if(fetchController){
+    fetchController.abort();
+    fetchController=null;
+  }
+}
+
+async function handleFetch(){
+  const btn=$('btn-fetch');
+  // Cancel any existing fetch
+  cancelFetch();
+  fetchController=new AbortController();
+  const signal=fetchController.signal;
+
+  try{
+    requireAuth();
+    if(!state.selectedApps.length)throw new Error('Select at least one app.');
+
+    // Switch fetch button to "Stop" appearance
+    btn.disabled=false; // keep enabled so user can re-click to cancel
+    btn.innerHTML='<span class="sp"></span> Fetching…';
+    btn.style.background='rgba(248,113,113,.15)';
+    btn.style.color='var(--danger)';
+    btn.style.borderColor='rgba(248,113,113,.4)';
+    btn.onclick=()=>{ cancelFetch(); }; // clicking during fetch = cancel
+
+    state.allReviews=[];state.pageTokens={};
+    $('main-alert').classList.add('hidden');
+
+    const df=$('date-from').value?new Date($('date-from').value).getTime()/1000:null;
+    const dt=$('date-to').value?new Date($('date-to').value).getTime()/1000+86400:null;
+    state.dateFrom=df;state.dateTo=dt;
+
+    $('prog-wrap').classList.remove('hidden');
+    const apps=state.selectedApps;
+
+    for(let i=0;i<apps.length;i++){
+      // Check if cancelled
+      if(signal.aborted){
+        $('prog-lbl').textContent=`⛔ Cancelled — ${state.allReviews.length} reviews loaded so far`;
+        break;
+      }
+
+      $('prog-bar').style.width=Math.round(i/apps.length*100)+'%';
+      $('prog-lbl').textContent=`Fetching ${apps[i].name}… (${i+1}/${apps.length})`;
+
+      try{
+        const data=await fetchPkgWithSignal(apps[i].pkg,null,signal);
+        if(signal.aborted)break;
+        const rows=(data.reviews||[]).map(r=>({...r,_pkg:apps[i].pkg,_appName:apps[i].name}));
+        const filtered=rows.filter(r=>{
+          const s=r.comments?.[0]?.userComment?.lastModified?.seconds;
+          if(!s)return true;
+          if(df&&s<df)return false;
+          if(dt&&s>dt)return false;
+          return true;
+        });
+        state.allReviews.push(...filtered);
+        if(data.tokenPagination?.nextPageToken)state.pageTokens[apps[i].pkg]=data.tokenPagination.nextPageToken;
+      }catch(e){
+        if(e.name==='AbortError'||signal.aborted)break;
+        console.warn(apps[i].pkg,e.message);
+      }
+
+      if(!signal.aborted)await new Promise(r=>setTimeout(r,120));
+    }
+
+    $('prog-bar').style.width='100%';
+    if(signal.aborted){
+      $('prog-lbl').textContent=`⛔ Cancelled — showing ${state.allReviews.length} reviews loaded`;
+      showAlert(`Fetch cancelled. Showing ${state.allReviews.length} reviews loaded before cancel.`,'al-warn');
+    } else {
+      $('prog-lbl').textContent=`✅ Loaded ${state.allReviews.length} reviews`;
+    }
+    setTimeout(()=>$('prog-wrap').classList.add('hidden'),2000);
+
+    if(state.allReviews.length){
+      applyFilters();updateStats();
+      const t=apps.length>1?`${apps.length} Apps — ${state.allReviews.length} Reviews`:apps[0].name;
+      $('reviews-title').textContent=t;
+    }
+
+    const hasMore=Object.keys(state.pageTokens).length>0;
+    $('btn-load-more').classList.toggle('hidden',!hasMore);
+    $('pagination').classList.toggle('hidden',!hasMore);
+
+  }catch(err){
+    if(err.name!=='AbortError')showAlert(err.message,'al-err');
+  }finally{
+    fetchController=null;
+    // Restore button
+    btn.onclick=null;
+    btn.disabled=false;
+    btn.style.background='';btn.style.color='';btn.style.borderColor='';
+    btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.32"/></svg> Fetch Reviews';
+  }
+}
+
+// Separate fetchPkg that accepts an AbortSignal
+async function fetchPkgWithSignal(pkg,token,signal){
+  const p=new URLSearchParams({maxResults:$('max-results').value});
+  if(token)p.set('token',token);
+  const r=await fetch(`${BASE}/${pkg}/reviews?${p}`,{headers:authHdr(),signal});
+  const body=await r.json().catch(()=>({}));
+  if(!r.ok)throw Object.assign(new Error(body?.error?.message||'HTTP '+r.status),{body});
+  return body;
+}
+
+async function fetchAllApps(){
+  const all=[...APPS.kids,...APPS.parents,...APPS.apps];
+  state.selectedApps=all;
+  document.querySelectorAll('.app-item').forEach(el=>{
+    el.classList.add('sel');
+    el.querySelector('.sel-tick')?.classList.remove('hidden');
+  });
+  refreshSelPanel();
+  // Show a hint — do NOT auto-fetch, let user click Fetch Reviews
+  showAlert(`✅ All ${all.length} apps selected. Click "Fetch Reviews" to load their reviews.`,'al-info');
+}
+
+function deselectAll(){
+  state.selectedApps=[];
+  document.querySelectorAll('.app-item').forEach(el=>{el.classList.remove('sel');el.querySelector('.sel-tick')?.classList.add('hidden');});
+  refreshSelPanel();
+  $('sel-count').textContent='';
+}
+
+function filterAppList(query){
+  const q=query.trim().toLowerCase();
+  const clearBtn=$('app-search-clear');
+  const noResult=$('app-search-no-result');
+  if(clearBtn)clearBtn.style.display=q?'block':'none';
+  let anyVisible=false;
+  // Show/hide each app-item based on name or pkg match
+  document.querySelectorAll('.app-item').forEach(el=>{
+    const name=(el.querySelector('span')?.textContent||'').toLowerCase();
+    const pkg=(el.dataset.pkg||'').toLowerCase();
+    const match=!q||name.includes(q)||pkg.includes(q);
+    el.style.display=match?'':'none';
+    if(match)anyVisible=true;
+  });
+  // Keep categories visible / collapsed as before; expand if a match inside
+  ['kids','parents','apps'].forEach(cat=>{
+    const cont=$('cat-'+cat);
+    const items=[...cont.querySelectorAll('.app-item')];
+    const visibleInCat=items.some(el=>el.style.display!=='none');
+    // If searching, auto-expand categories that have matches
+    if(q&&visibleInCat)cont.style.display='flex';
+    // Hide the category header too if nothing inside matches
+    const hdr=cont.previousElementSibling;
+    if(hdr)hdr.style.display=(!q||visibleInCat)?'':'none';
+  });
+  if(noResult)noResult.classList.toggle('hidden',anyVisible||!q);
+}
+
+function clearAppSearch(){
+  const inp=$('app-search-input');
+  if(inp){inp.value='';inp.focus();}
+  filterAppList('');
+}
+
+async function loadMore(){
+  const btn=$('btn-load-more');btn.disabled=true;btn.textContent='Loading…';
+  try{
+    requireAuth();
+    for(const app of state.selectedApps){
+      const tok=state.pageTokens[app.pkg];if(!tok)continue;
+      const data=await fetchPkg(app.pkg,tok);
+      const rows=(data.reviews||[]).map(r=>({...r,_pkg:app.pkg,_appName:app.name}));
+      state.allReviews.push(...rows);
+      if(data.tokenPagination?.nextPageToken)state.pageTokens[app.pkg]=data.tokenPagination.nextPageToken;
+      else delete state.pageTokens[app.pkg];
+    }
+    applyFilters();updateStats();
+  }catch(e){showAlert(e.message,'al-err');}
+  finally{
+    btn.disabled=false;btn.textContent='Load More';
+    if(!Object.keys(state.pageTokens).length)btn.classList.add('hidden');
+  }
+}
+
+/* ═══════════════════════════════════════
+   FILTERS + RENDER
+═══════════════════════════════════════ */
+function applyFilters(){
+  const s=state.starFilter,q=state.searchQ.toLowerCase();
+  state.filtered=state.allReviews.filter(r=>{
+    const uc=r.comments?.[0]?.userComment;
+    if(!uc)return false;
+    if(s!=='all'&&uc.starRating!==parseInt(s))return false;
+    if(q){const txt=`${uc.text||''} ${r.authorName||''} ${r._appName||''}`.toLowerCase();if(!txt.includes(q))return false;}
+    return true;
+  });
+  renderReviews();
+}
+
+/* Device type → emoji */
+function deviceEmoji(d){
+  if(!d)return '';
+  const l=d.toLowerCase();
+  if(l.includes('tb-')||l.includes('tab')||l.includes('sm-t')||l.includes('sm-p')||l.includes('kfj')||l.includes('kfkawi'))return '📟';
+  if(l.includes('adt')||l.includes('firetv')||l.includes(' atv')||l.includes('tv'))return '📺';
+  if(l.includes('chromebook')||l.includes('cros'))return '💻';
+  if(l.includes('watch')||l.includes('wear'))return '⌚';
+  return '📱';
+}
+
+function sentiment(s){
+  if(s>=4)return{cls:'s-pos',lbl:'Positive 😊'};
+  if(s===3)return{cls:'s-neu',lbl:'Neutral 😐'};
+  return{cls:'s-neg',lbl:'Negative 😟'};
+}
+
+function renderReviews(){
+  const area=$('reviews-area');
+  if(!state.filtered.length){
+    area.innerHTML=`<div class="empty-state"><div class="empty-ico">🔍</div>
+      <div style="font-weight:700;">${state.allReviews.length?'No reviews match filter':'No reviews loaded'}</div>
+      <div style="font-size:.74rem;color:var(--text2);">${state.allReviews.length?'Try a different filter':'Sign in → select app → Fetch'}</div></div>`;
+    return;
+  }
+  area.innerHTML='';
+  state.filtered.forEach(rv=>{
+    const uc=rv.comments?.[0]?.userComment;
+    const dc=rv.comments?.find(c=>c.developerComment);
+    if(!uc)return;
+    const stars=uc.starRating||0;
+    const sent=sentiment(stars);
+    const dateStr=(uc.lastModified?.seconds)?new Date(uc.lastModified.seconds*1000).toLocaleString('en-US',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+    const author=rv.authorName||'Anonymous';
+    const starsH='★'.repeat(stars)+'☆'.repeat(5-stars);
+    const existReply=dc?.developerComment?.text||'';
+    const lang=uc.reviewerLanguage||'';
+    const isNonEn=lang&&!lang.startsWith('en');
+    const body=uc.text||'';
+    const isLong=body.length>200;
+    const translated=rv._translated||'';
+    const aiReply=rv._aiReply||'';
+    const rid=rv.reviewId;
+    const pkg=rv._pkg;
+    const appName=rv._appName||pkg;
+    const device=uc.device||'';
+    const devE=deviceEmoji(device);
+
+    const card=document.createElement('div');
+    card.className=`rv-card s${stars}`;
+    card.id=`rv-${rid}`;
+    card.innerHTML=`
+      <div class="rv-top">
+        <div class="rv-avatar">${esc(author[0]?.toUpperCase()||'?')}</div>
+        <div class="rv-meta">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px;">
+            <span class="rv-author">${esc(author)}</span>
+            <span class="sent-badge ${sent.cls}">${sent.lbl}</span>
+            <span class="app-tag" title="${esc(pkg)}" style="display:inline-flex;align-items:center;gap:3px;">
+              <span class="rv-app-ico" id="rvico-${rid}"><span style="font-size:.55rem;">${CAT[getCat(pkg)]?.e||'📱'}</span></span>
+              ${esc(appName)}
+            </span>
+          </div>
+          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+            <span class="rv-stars c${stars}">${starsH}</span>
+            <span class="rv-date">${esc(dateStr)}</span>
+            ${lang?`<span class="rv-lang">🌍 ${esc(lang)}</span>`:''}
+            ${uc.appVersionName?`<span class="rv-ver">v${esc(uc.appVersionName)}</span>`:''}
+            ${device?`<span class="rv-device">${devE} (${esc(device)})</span>`:''}
+          </div>
+        </div>
+      </div>
+      ${body?`<div class="rv-body${isLong?' clamped':''}" id="rb-${rid}">${esc(body)}</div>${isLong?`<button class="read-more-btn" onclick="toggleBody('${rid}')">Read more ▾</button>`:''}`:''}
+      ${translated?`<div class="rv-translated"><div class="rv-tl-lbl">🌐 Translated</div>${esc(translated)}</div>`:''}
+      ${aiReply?`<div class="rv-ai-box"><div class="rv-ai-lbl">🤖 AI Reply Suggestion</div>${esc(aiReply)}<div style="display:flex;gap:5px;margin-top:5px;"><button class="btn btn-xs btn-success" onclick="useAi('${rid}')">Use This</button><button class="btn btn-xs btn-secondary" onclick="genAi('${rid}')">Regenerate</button></div></div>`:''}
+      ${existReply?`<div class="rv-reply-box"><div class="rv-reply-lbl">Your Reply</div><div class="rv-reply-txt">${esc(existReply)}</div></div>`:''}
+      <div id="rbox-${rid}" class="hidden" style="margin-top:8px;">
+        <textarea class="reply-ta" id="rta-${rid}" rows="3" placeholder="Write reply…">${esc(existReply)}</textarea>
+        <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;">
+          <button class="btn btn-xs btn-success" onclick="submitReply('${rid}','${pkg}')">Send Reply</button>
+          <button class="btn btn-xs btn-secondary" onclick="genAi('${rid}')">🤖 AI Suggest</button>
+          <button class="btn btn-xs btn-secondary" onclick="translateOne('${rid}')">🌐 Translate</button>
+          <button class="btn btn-xs btn-secondary" onclick="$(\'rbox-${rid}\').classList.add(\'hidden\')">Cancel</button>
+        </div>
+        <div id="rs-${rid}" class="hidden mt1" style="font-size:.7rem;"></div>
+      </div>
+      <div class="rv-actions">
+        <button class="btn btn-xs btn-secondary" onclick="$(\'rbox-${rid}\').classList.toggle(\'hidden\')">${existReply?'✏️ Edit Reply':'💬 Reply'}</button>
+        ${!translated?`<button class="btn btn-xs btn-secondary" onclick="translateOne('${rid}')">🌐 Translate</button>`:''}
+        <span style="margin-left:auto;font-size:.6rem;color:var(--text3);font-family:var(--mono);">${rid.slice(0,10)}…</span>
+      </div>`;
+    area.appendChild(card);
+    // Inject app icon from cache (or fetch if not cached yet)
+            // ${ !aiReply ? `<button class="btn btn-xs btn-secondary" onclick="genAi('${rid}')">🤖 AI Reply</button>` : '' }
+
+    const icoBox=card.querySelector(`#rvico-${rid}`);
+    if(icoBox){
+      fetchIconUrl(pkg).then(url=>{
+        if(!url||!icoBox)return;
+        const img=new Image();
+        img.onload=()=>{icoBox.innerHTML='';icoBox.appendChild(img);};
+        img.onerror=()=>{};
+        img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:3px;display:block;';
+        img.src=url;
+      });
+    }
+  });
+}
+
+function toggleBody(rid){
+  const b=$(`rb-${rid}`),btn=b?.nextElementSibling;
+  if(!b||!btn)return;
+  const c=b.classList.contains('clamped');
+  b.classList.toggle('clamped',!c);
+  btn.textContent=c?'Read less ▴':'Read more ▾';
+}
+
+/* ═══════════════════════════════════════
+   STATS
+═══════════════════════════════════════ */
+function updateStats(){
+  const all=state.allReviews;
+  const cnt={1:0,2:0,3:0,4:0,5:0};
+  let tot=0,rep=0;
+  all.forEach(r=>{
+    const uc=r.comments?.[0]?.userComment;if(!uc)return;
+    const s=uc.starRating||0;cnt[s]=(cnt[s]||0)+1;tot+=s;
+    if(r.comments?.find(c=>c.developerComment))rep++;
+  });
+  $('sn-all').textContent=all.length;
+  [1,2,3,4,5].forEach(s=>$('sn-'+s).textContent=cnt[s]||0);
+  $('sn-avg').textContent=all.length?(tot/all.length).toFixed(1):'—';
+  $('sn-replied').textContent=rep;
+  $('sn-pending').textContent=all.length-rep;
+}
+
+/* ═══════════════════════════════════════
+   TRANSLATION — Google Translate (free)
+   Uses translate.googleapis.com with client=gtx
+   No API key required. Auto language detection.
+   Returns Access-Control-Allow-Origin: * so CORS is fine.
+═══════════════════════════════════════ */
+async function googleTranslate(text){
+  const url='https://translate.googleapis.com/translate_a/single'
+    +`?client=gtx&sl=auto&tl=en&dt=t&q=${encodeURIComponent(text.slice(0,2000))}`;
+  const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
+  if(!r.ok)throw new Error('Google Translate error '+r.status);
+  const data=await r.json();
+  // Response: [[[translatedText, originalText], ...], null, detectedLang, ...]
+  // Concatenate all translated segments
+  const translated=(data[0]||[]).map(seg=>seg[0]||'').join('').trim();
+  return translated||null;
+}
+
+async function translateOne(rid){
+  const rv=state.allReviews.find(r=>r.reviewId===rid);if(!rv)return;
+  const text=rv.comments?.[0]?.userComment?.text||'';if(!text)return;
+  const card=$(`rv-${rid}`);
+  // Show loading state — insert after rv-body or read-more button
+  const existTl=card?.querySelector('.rv-translated');
+  const loadHtml=`<div class="rv-translated"><div class="rv-tl-lbl">🌐 Translating…</div><span style="opacity:.5;font-size:.72rem;">Please wait…</span></div>`;
+  if(existTl)existTl.outerHTML=loadHtml;
+  else{
+    const anchor=card?.querySelector('.read-more-btn')||card?.querySelector('.rv-body');
+    anchor?.insertAdjacentHTML('afterend',loadHtml);
+  }
+
+  try{
+    const translated=await googleTranslate(text);
+    if(translated&&translated.toLowerCase().trim()!==text.toLowerCase().trim()){
+      rv._translated=translated;
+      const html=`<div class="rv-translated"><div class="rv-tl-lbl">🌐 English Translation</div>${esc(translated)}</div>`;
+      const tlEl=card?.querySelector('.rv-translated');
+      if(tlEl)tlEl.outerHTML=html;
+      // Hide the Translate button in rv-actions now that we have a translation
+      card?.querySelectorAll('.rv-actions button, .rv-body+div button').forEach(btn=>{
+        if(btn.textContent.includes('Translate'))btn.style.display='none';
+      });
+    } else {
+      // Text is already English — remove loading spinner and show brief note
+      card?.querySelector('.rv-translated')?.remove();
+      showAlert('This review is already in English — no translation needed.','al-info');
+    }
+  }catch(e){
+    const tlEl=card?.querySelector('.rv-translated');
+    if(tlEl)tlEl.outerHTML=`<div class="rv-translated"><div class="rv-tl-lbl" style="color:var(--danger);">❌ Translation failed</div><span style="font-size:.7rem;">${esc(e.message)}</span></div>`;
+    console.warn('Translation error',e);
+  }
+}
+
+async function translateAll(){
+  const btn=$('btn-translate-all');
+  const orig=btn.innerHTML;
+  // Translate ALL visible reviews that aren't already translated
+  const rows=state.filtered.filter(r=>!r._translated);
+  if(!rows.length){showAlert('All visible reviews are already translated.','al-info');return;}
+  btn.disabled=true;
+  let done=0;
+  for(const r of rows){
+    btn.innerHTML=`<span class="sp"></span> ${++done}/${rows.length}`;
+    await translateOne(r.reviewId);
+    await new Promise(x=>setTimeout(x,100)); // small delay between calls
+  }
+  btn.disabled=false;btn.innerHTML=orig;
+  showAlert(`✅ Translated ${done} reviews.`,'al-ok');
+}
+
+/* ═══════════════════════════════════════
+   AI REPLY — CLAUDE + CHATGPT
+═══════════════════════════════════════ */
+async function genAi(rid){
+  const p=state.aiProvider;
+  const key=p==='claude'?$('claude-key').value.trim():$('openai-key').value.trim();
+  if(!key){alert(`Enter your ${p==='claude'?'Claude':'OpenAI'} API key in the AI Reply section.`);return;}
+  const rv=state.allReviews.find(r=>r.reviewId===rid);if(!rv)return;
+  const uc=rv.comments?.[0]?.userComment;
+  const stars=uc?.starRating||3,text=uc?.text||'',app=rv._appName||'our app';
+  const tone=$('reply-tone').value;
+  const sEl=$(`rs-${rid}`);
+  if(sEl){sEl.textContent='🤖 Generating…';sEl.classList.remove('hidden');}
+
+  const prompt=`You are a ${tone} developer support rep for "${app}", a mobile app/game. Write a short Play Store reply (2-4 sentences, max 60 words) to this ${stars}-star review: "${text}". Be ${tone}. Sound human. Don't start with "Thank you for your feedback". Reply ONLY with the reply text.`;
+
+  try{
+    let reply='';
+    if(p==='claude'){
+      const r=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'x-api-key':key,'anthropic-version':'2023-06-01','content-type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:prompt}]}),
+      });
+      const d=await r.json();
+      if(!r.ok)throw new Error(d?.error?.message||'Claude error '+r.status);
+      reply=d.content?.[0]?.text?.trim()||'';
+    } else {
+      const r=await fetch('https://api.openai.com/v1/chat/completions',{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},
+        body:JSON.stringify({model:'gpt-4o-mini',max_tokens:150,messages:[{role:'user',content:prompt}]}),
+      });
+      const d=await r.json();
+      if(!r.ok)throw new Error(d?.error?.message||'OpenAI error '+r.status);
+      reply=d.choices?.[0]?.message?.content?.trim()||'';
+    }
+    if(reply){
+      rv._aiReply=reply;
+      const ta=$(`rta-${rid}`);if(ta)ta.value=reply;
+      const card=$(`rv-${rid}`);
+      const ex=card?.querySelector('.rv-ai-box');
+      const pLbl=p==='claude'?'🤖 Claude':'🧠 ChatGPT';
+      const html=`<div class="rv-ai-box"><div class="rv-ai-lbl">${pLbl} Reply Suggestion</div>${esc(reply)}<div style="display:flex;gap:5px;margin-top:5px;"><button class="btn btn-xs btn-success" onclick="useAi('${rid}')">Use This</button><button class="btn btn-xs btn-secondary" onclick="genAi('${rid}')">Regenerate</button></div></div>`;
+      if(ex)ex.outerHTML=html;else card?.querySelector('.rv-body')?.insertAdjacentHTML('afterend',html);
+      if(sEl){sEl.textContent='✅ Done!';setTimeout(()=>sEl.classList.add('hidden'),2000);}
+    }
+  }catch(e){if(sEl){sEl.textContent='❌ '+e.message;sEl.classList.remove('hidden');}}
+}
+
+function useAi(rid){
+  const rv=state.allReviews.find(r=>r.reviewId===rid);
+  if(!rv?._aiReply)return;
+  const ta=$(`rta-${rid}`);if(ta)ta.value=rv._aiReply;
+  $(`rbox-${rid}`)?.classList.remove('hidden');
+}
+
+/* ═══════════════════════════════════════
+   SUBMIT REPLY
+═══════════════════════════════════════ */
+async function submitReply(rid,pkg){
+  const ta=$(`rta-${rid}`),sEl=$(`rs-${rid}`);
+  const text=ta?.value.trim();
+  if(!text){if(sEl){sEl.textContent='Reply is empty.';sEl.classList.remove('hidden');}return;}
+  try{
+    requireAuth();
+    if(sEl){sEl.textContent='Sending…';sEl.classList.remove('hidden');}
+    await apiFetch(`${BASE}/${pkg}/reviews/${rid}:reply`,{method:'POST',headers:authHdr(),body:JSON.stringify({replyText:text})});
+    if(sEl){sEl.textContent='✅ Sent!';sEl.style.color='var(--green)';}
+    const rv=state.allReviews.find(r=>r.reviewId===rid);
+    if(rv){const dc=rv.comments?.find(c=>c.developerComment);if(dc)dc.developerComment.text=text;else rv.comments?.push({developerComment:{text,lastModified:{seconds:Date.now()/1000}}});}
+    updateStats();
+    const card=$(`rv-${rid}`);
+    const box=card?.querySelector('.rv-reply-box');
+    const html=`<div class="rv-reply-box"><div class="rv-reply-lbl">Your Reply</div><div class="rv-reply-txt">${esc(text)}</div></div>`;
+    if(box)box.outerHTML=html;else card?.querySelector('.rv-actions')?.insertAdjacentHTML('beforebegin',html);
+    $(`rbox-${rid}`)?.classList.add('hidden');
+  }catch(e){if(sEl){sEl.textContent='❌ '+e.message;sEl.style.color='var(--danger)';}}
+}
+
+/* ═══════════════════════════════════════
+   EXPORT
+═══════════════════════════════════════ */
+function dlCSV(){
+  if(!state.filtered.length){alert('No reviews to export.');return;}
+  const h=['App','ReviewID','Author','Stars','Date','Language','AppVersion','Device','Review','DeveloperReply','Translated'];
+  const rows=state.filtered.map(r=>{
+    const uc=r.comments?.[0]?.userComment||{};
+    const dc=r.comments?.find(c=>c.developerComment)?.developerComment;
+    const d=uc.lastModified?.seconds?new Date(uc.lastModified.seconds*1000).toISOString():'';
+    return [r._appName||r._pkg,r.reviewId,r.authorName||'',uc.starRating||'',d,uc.reviewerLanguage||'',uc.appVersionName||'',uc.device||'',(uc.text||'').replace(/"/g,'""'),(dc?.text||'').replace(/"/g,'""'),(r._translated||'').replace(/"/g,'""')].map(v=>`"${v}"`).join(',');
+  });
+  dl(`reviews-${new Date().toISOString().slice(0,10)}.csv`,[h.join(','),...rows].join('\n'),'text/csv;charset=utf-8');
+}
+
+function dlJSON(){
+  if(!state.filtered.length){alert('No reviews to export.');return;}
+  const data=state.filtered.map(r=>{
+    const uc=r.comments?.[0]?.userComment||{};
+    const dc=r.comments?.find(c=>c.developerComment)?.developerComment;
+    return{app:r._appName||r._pkg,reviewId:r.reviewId,author:r.authorName,stars:uc.starRating,date:uc.lastModified?.seconds?new Date(uc.lastModified.seconds*1000).toISOString():'',language:uc.reviewerLanguage,appVersion:uc.appVersionName,device:uc.device,review:uc.text,reply:dc?.text||'',translated:r._translated||'',aiSuggested:r._aiReply||''};
+  });
+  dl(`reviews-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(data,null,2),'application/json');
+}
+
+function dl(name,content,type){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type}));
+  a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+/* ═══════════════════════════════════════
+   ALERTS
+═══════════════════════════════════════ */
+function showAlert(msg,cls='al-info'){
+  const el=$('main-alert');el.className='alert '+cls;el.textContent=msg;el.classList.remove('hidden');
+}
+
+/* ═══════════════════════════════════════
+   STAR FILTER + SEARCH
+═══════════════════════════════════════ */
+function setupFilters(){
+  document.querySelectorAll('.chips .chip').forEach(c=>{
+    c.addEventListener('click',()=>{
+      document.querySelectorAll('.chips .chip').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');state.starFilter=c.dataset.star;
+      document.querySelectorAll('.stat-item').forEach(x=>x.classList.toggle('act',x.dataset.star===c.dataset.star));
+      applyFilters();
+    });
+  });
+  document.querySelectorAll('.stat-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const s=item.dataset.star;if(!s)return;
+      document.querySelectorAll('.stat-item').forEach(x=>x.classList.remove('act'));
+      item.classList.add('act');
+      document.querySelectorAll('.chips .chip').forEach(c=>c.classList.toggle('on',c.dataset.star===s));
+      state.starFilter=s;applyFilters();
+    });
+  });
+  $('search-input').addEventListener('input',e=>{state.searchQ=e.target.value;applyFilters();});
+}
+
+/* ═══════════════════════════════════════
+   WIRE EVENTS
+═══════════════════════════════════════ */
+$('btn-signin').addEventListener('click',initAuth);
+$('btn-signout').addEventListener('click',signOut);
+$('auth-pin').addEventListener('keydown',e=>{if(e.key==='Enter')initAuth();});
+$('btn-fetch').addEventListener('click',handleFetch);
+$('btn-cancel-fetch').addEventListener('click',cancelFetch);
+$('btn-all-apps').addEventListener('click',fetchAllApps);
+$('btn-deselect-all').addEventListener('click',deselectAll);
+$('btn-translate-all').addEventListener('click',translateAll);
+$('btn-csv').addEventListener('click',dlCSV);
+$('btn-json').addEventListener('click',dlJSON);
+$('btn-load-more').addEventListener('click',loadMore);
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+window.addEventListener('load',()=>{
+  buildAppLists();
+  setupFilters();
+  const now=new Date(),ago=new Date(now-90*86400*1000);
+  $('date-to').value=now.toISOString().slice(0,10);
+  $('date-from').value=ago.toISOString().slice(0,10);
+  try{const t=localStorage.getItem('rv_theme');if(t&&!t.startsWith('__custom__'))setTheme(t);}catch(e){}
+  // Pre-warm icon cache in background — inject into sidebar list as icons arrive
+  state.iconCache={};
+  const allPkgs=[...APPS.kids,...APPS.parents,...APPS.apps].map(a=>a.pkg);
+  let idx=0;
+  const warmNext=async()=>{
+    if(idx>=allPkgs.length)return;
+    const pkg=allPkgs[idx++];
+    try{
+      const url=await fetchIconUrl(pkg);
+      if(url){
+        // Update sidebar app-list icon
+        const el=$('ai-'+pkg.replace(/\W/g,'_'));
+        if(el){
+          const img=new Image();
+          img.onload=()=>{el.innerHTML='';el.appendChild(img);};
+          img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:3px;';
+          img.src=url;
+        }
+        // Update any already-rendered review cards for this pkg
+        document.querySelectorAll(`[id^="rvico-"]`).forEach(box=>{
+          // Find the review to check its pkg
+          const cardId=box.closest('[id^="rv-"]')?.id;
+          if(!cardId)return;
+          const rid=cardId.replace('rv-','');
+          const rv=state.allReviews.find(r=>r.reviewId===rid&&r._pkg===pkg);
+          if(rv&&box.children.length===1&&box.firstChild?.tagName!=='IMG'){
+            const img=new Image();
+            img.onload=()=>{box.innerHTML='';box.appendChild(img);};
+            img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:3px;display:block;';
+            img.src=url;
+          }
+        });
+      }
+    }catch(e){}
+    setTimeout(warmNext,350);
+  };
+  setTimeout(warmNext,1200);
+  // Load saved theme (including custom presets)
+  loadSavedTheme();
+});
+
+/* ═══════════════════════════════════════════════════════════
+   CUSTOM THEME EDITOR
+   – Color pickers for all CSS variables with live preview
+   – Save/load named presets to localStorage
+   – Export as CSS
+═══════════════════════════════════════════════════════════ */
+const CTE_VARS=['--bg','--surface','--surface2','--surface3','--text','--text2','--text3','--accent','--accent2','--accent3','--border','--border2','--green','--warn','--danger'];
+
+function getCSSVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function applyCSSVars(m){for(const[k,v]of Object.entries(m))document.documentElement.style.setProperty(k,v);}
+function removeCSSVars(a){a.forEach(k=>document.documentElement.style.removeProperty(k));}
+
+function normalizeHex(s){
+  s=(s||'').trim();
+  if(/^#[0-9a-f]{6}$/i.test(s))return s;
+  if(/^#[0-9a-f]{3}$/i.test(s))return '#'+s[1]+s[1]+s[2]+s[2]+s[3]+s[3];
+  const m=s.match(/rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  if(m){const h=n=>parseInt(n).toString(16).padStart(2,'0');return '#'+h(m[1])+h(m[2])+h(m[3]);}
+  return null;
+}
+
+function deriveSelVars(hex){
+  const h=normalizeHex(hex)||'#6366f1';
+  const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
+  return{'--sel-bg':`rgba(${r},${g},${b},.12)`,'--sel-border':`rgba(${r},${g},${b},.4)`,'--chip-bg':`rgba(${r},${g},${b},.18)`,'--tag-bg':`rgba(${r},${g},${b},.12)`,'--tag-border':`rgba(${r},${g},${b},.3)`,'--stat-act':`rgba(${r},${g},${b},.08)`};
+}
+
+function syncPickersFromCSS(){
+  document.querySelectorAll('#cte-pickers .cte-swatch,#cte-pickers .cte-hex').forEach(el=>{
+    const v=el.dataset.var;if(!v)return;
+    const hex=normalizeHex(getCSSVar(v))||'#888888';
+    el.value=hex;
+  });
+}
+
+function wirePickers(){
+  document.querySelectorAll('.cte-swatch').forEach(sw=>{
+    sw.addEventListener('input',()=>{
+      const v=sw.dataset.var,hex=sw.value;
+      const hi=document.querySelector(`.cte-hex[data-var="${v}"]`);if(hi)hi.value=hex;
+      document.documentElement.style.setProperty(v,hex);
+      if(v==='--accent')applyCSSVars(deriveSelVars(hex));
+    });
+  });
+  document.querySelectorAll('.cte-hex').forEach(inp=>{
+    inp.addEventListener('input',()=>{
+      const v=inp.dataset.var,val=inp.value.trim();
+      if(!/^#[0-9a-f]{3,6}$/i.test(val))return;
+      const hex=normalizeHex(val)||val;
+      const sw=document.querySelector(`.cte-swatch[data-var="${v}"]`);if(sw)sw.value=hex;
+      document.documentElement.style.setProperty(v,hex);
+      if(v==='--accent')applyCSSVars(deriveSelVars(hex));
+    });
+    inp.addEventListener('blur',()=>{if(inp.value&&!inp.value.startsWith('#'))inp.value='#'+inp.value.replace(/[^0-9a-f]/gi,'');});
+  });
+}
+
+function openThemeEditor(){
+  closeThemeDrop();
+  $('cte-overlay').classList.remove('hidden');
+  $('cte-overlay').dataset.baseTheme=document.body.className;
+  $('cte-current-name').textContent=THEME_LABELS[document.body.className]||'Custom';
+  syncPickersFromCSS();
+  loadPresetsIntoUI();
+}
+function closeThemeEditor(){$('cte-overlay').classList.add('hidden');}
+$('cte-overlay').addEventListener('click',e=>{if(e.target===$('cte-overlay'))closeThemeEditor();});
+
+function resetToBaseTheme(){
+  const base=$('cte-overlay').dataset.baseTheme||'theme-dark';
+  removeCSSVars([...CTE_VARS,'--sel-bg','--sel-border','--chip-bg','--tag-bg','--tag-border','--stat-act']);
+  // Re-apply class to trigger theme CSS
+  document.body.className=base;
+  syncPickersFromCSS();
+}
+
+function saveCustomTheme(){
+  const name=($('cte-name-input').value.trim())||'My Theme '+(Object.keys(loadPresets()).length+1);
+  const vars={};
+  for(const v of CTE_VARS)vars[v]=getCSSVar(v);
+  const accent=vars['--accent'];
+  if(accent)Object.assign(vars,deriveSelVars(normalizeHex(accent)||accent));
+  const presets=loadPresets();
+  const id='custom_'+Date.now();
+  presets[id]={name,vars,created:new Date().toISOString()};
+  savePresets(presets);
+  loadPresetsIntoUI();
+  applyCustomPreset(id,name,vars);
+  $('cte-name-input').value='';
+  showAlert(`✅ Theme "${name}" saved!`,'al-ok');
+}
+
+function loadPresets(){try{return JSON.parse(localStorage.getItem('rv_custom_themes')||'{}');}catch(e){return {};}}
+function savePresets(p){try{localStorage.setItem('rv_custom_themes',JSON.stringify(p));}catch(e){}}
+
+function applyCustomPreset(id,name,vars){
+  document.body.className='theme-custom';
+  applyCSSVars(vars);
+  $('theme-name-lbl').textContent=name;
+  document.querySelectorAll('.theme-opt').forEach(o=>o.classList.remove('cur'));
+  try{localStorage.setItem('rv_theme','__custom__:'+id);}catch(e){}
+}
+
+function loadPresetsIntoUI(){
+  const presets=loadPresets();
+  const cont=$('cte-presets-list');
+  cont.innerHTML='';
+  const keys=Object.keys(presets);
+  if(!keys.length){
+    cont.innerHTML='<div style="font-size:.72rem;color:var(--text3);text-align:center;padding:12px 0;">No saved presets yet.<br>Customize colors above and click Save.</div>';
+    return;
+  }
+  keys.forEach(id=>{
+    const p=presets[id];
+    const accent=p.vars['--accent']||'#6366f1';
+    const bg=p.vars['--bg']||'#07090f';
+    const row=document.createElement('div');
+    row.className='cte-preset-row';
+    row.innerHTML=`
+      <div class="cte-preset-dot" style="background:linear-gradient(135deg,${bg},${accent});border:1px solid var(--border);"></div>
+      <span style="flex:1;font-weight:600;font-size:.73rem;">${esc(p.name)}</span>
+      <span style="font-size:.6rem;color:var(--text3);margin-right:4px;">${new Date(p.created).toLocaleDateString()}</span>
+      <button class="cte-apply-btn" data-id="${id}" style="font-size:.64rem;padding:2px 8px;border-radius:5px;background:var(--sel-bg);color:var(--accent);border:1px solid var(--sel-border);cursor:pointer;margin-right:3px;">Apply</button>
+      <button class="cte-del-btn" data-id="${id}" style="font-size:.64rem;padding:2px 6px;border-radius:5px;background:rgba(248,113,113,.1);color:var(--danger);border:1px solid rgba(248,113,113,.25);cursor:pointer;">✕</button>`;
+    cont.appendChild(row);
+  });
+  // Wire apply/delete after inserting
+  cont.querySelectorAll('.cte-apply-btn').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.id;const p=loadPresets()[id];
+    if(p){applyCustomPreset(id,p.name,p.vars);syncPickersFromCSS();closeThemeEditor();}
+  }));
+  cont.querySelectorAll('.cte-del-btn').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.id;const ps=loadPresets();const n=ps[id]?.name||'theme';
+    delete ps[id];savePresets(ps);loadPresetsIntoUI();showAlert(`Deleted "${n}"`, 'al-warn');
+  }));
+}
+
+function copyThemeCSS(){
+  const vars={};
+  for(const v of CTE_VARS)vars[v]=getCSSVar(v);
+  const accent=vars['--accent'];
+  if(accent)Object.assign(vars,deriveSelVars(normalizeHex(accent)||accent));
+  const name=$('cte-name-input').value.trim()||'my-custom-theme';
+  const css=`body.${name.toLowerCase().replace(/\s+/g,'-')} {\n${Object.entries(vars).map(([k,v])=>`  ${k}: ${v};`).join('\n')}\n}`;
+  if(navigator.clipboard){navigator.clipboard.writeText(css).then(()=>showAlert('CSS copied to clipboard!','al-ok')).catch(()=>prompt('Copy this CSS:',css));}
+  else prompt('Copy this CSS:',css);
+}
+
+function loadSavedTheme(){
+  try{
+    const saved=localStorage.getItem('rv_theme');
+    if(!saved)return;
+    if(saved.startsWith('__custom__:')){
+      const id=saved.slice(11);
+      const presets=loadPresets();
+      if(presets[id])applyCustomPreset(id,presets[id].name,presets[id].vars);
+    } else {
+      setTheme(saved);
+    }
+  }catch(e){}
+}
+
+wirePickers();
+</script>
+</body>
+</html>
