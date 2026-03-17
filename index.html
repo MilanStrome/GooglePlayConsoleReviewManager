@@ -1743,7 +1743,7 @@ function closeThemeEditor(){$('cte-overlay').classList.add('hidden');}
 $('cte-overlay').addEventListener('click',e=>{if(e.target===$('cte-overlay'))closeThemeEditor();});
 
 function resetToBaseTheme(){
-  const base=$('cte-overlay').dataset.baseTheme||'theme-dark';
+  const base=$('cte-overlay').dataset.baseTheme||'theme-rose';
   removeCSSVars([...CTE_VARS,'--sel-bg','--sel-border','--chip-bg','--tag-bg','--tag-border','--stat-act']);
   // Re-apply class to trigger theme CSS
   document.body.className=base;
